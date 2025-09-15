@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import { useHead } from '#imports'
-
-useHead({
-  script: [
-    {
-      src: 'https://accounts.google.com/gsi/client',
-      async: true,
-      defer: true
-    }
-  ]
-})
 definePageMeta({
   middleware: ['guest-client'] // بدون .client.ts
 })
@@ -179,9 +168,6 @@ function handleGoogleResponse(response: any) {
     <div style="padding:0 20px;">
       <span class="font-semibold block m-auto text-center mb-2">Or</span>
       <!-- login by google -->
-      <div id="g_id_onload" data-client_id="825528766846-gbq9m05amb2rdbdk5pv9bvp89b4fgqtf.apps.googleusercontent.com"
-        data-callback="loginGoogle">
-      </div>
       <div class="g_id_signin" data-type="standard"></div>
     </div>
   </div>
