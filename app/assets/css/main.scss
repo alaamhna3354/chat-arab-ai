@@ -1,0 +1,164 @@
+@use 'components.scss';
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #F7F7F7;
+    color: #21221f;
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    overflow-x: hidden;
+
+}
+
+h1 {
+    margin: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+input {
+    height: 40px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app-ar {
+    direction: rtl;
+}
+
+.main {
+    display: flex;
+    position: relative;
+    &.open {
+        .body-content {
+            margin-inline-start: 260px;
+        }
+    }
+    .side-bar {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        background: linear-gradient(to bottom, #e4eaf6, #fff);
+        width: 55px;
+        overflow: hidden;
+        &.en {
+            left: 0;
+        }
+
+        &.ar {
+            right: 0;
+        }
+        .hover-open-sidebar{
+            display: none;
+        }
+        &.open{
+            width: 260px;
+            .head{
+                padding: 0 5px;
+                .logo{
+                    img{
+                        margin-inline-start: 0;
+                    }
+                }
+            }
+            .hide-close{
+                display: grid !important;
+               
+            }
+            .chats-but {
+                justify-content: flex-start !important;
+            }
+         
+        }
+        &:not(.open){
+            .logo{
+                &:hover{
+                    img{
+                        display: none;
+                    }
+                    .hover-open-sidebar{
+                        display: block;
+                        margin-inline-start: 5px;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+        padding: 20px 10px;
+        height: 100%;
+        border-inline-end: 1px solid #e6e6e6;
+        min-height: 100vh;
+        transition: .3s;
+        display: grid;
+        align-content: space-between;
+
+        .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            height: 36px;
+            .logo {
+                img{
+                    margin-inline-start: 5px;
+                }
+                font-weight: 900;
+               
+            }
+
+            button {
+                width: 36px;
+                height: 36px;
+                display: grid;
+                place-content: center;
+                font-weight: bold;
+                font-size: 20px;
+            }
+        }
+
+        .chats-but {
+            background-color: transparent;
+            border: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .3s;
+            padding: 7px 5px;
+            margin-bottom: 2px;
+            border-radius: 5px;
+            cursor: pointer;
+           
+            &:hover {
+                background-color: #e6e6e6;
+            }
+        }
+
+        .hide-close{
+            display: none !important;
+        }
+    }
+
+    .body-content {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        padding:16px 20px;
+        transition: .3s;
+        margin-inline-start: 55px;
+
+        @media (max-width:768px) {
+            margin-inline-start: 55px !important;
+        }
+    }
+
+}
