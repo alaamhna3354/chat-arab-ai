@@ -89,8 +89,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 }
 // login by google
 
-// await auth.loginWithGoogleToken(googleIdToken)
-
 const config = useRuntimeConfig();
 
 onMounted(() => {
@@ -102,14 +100,14 @@ onMounted(() => {
 
   google.accounts.id.renderButton(
     document.getElementById('g_id_signin'),
-    { theme: 'outline', size: 'large' }
+    { theme: 'outline', size: 'large',shape:'pill',text:"continue_with" }
   );
 
   google.accounts.id.prompt(); // optional, for One Tap
 });
 function handleGoogleResponse(response: any) {
-  console.log("Full response:", response);
-  console.log("Google ID Token:", response.credential); // هون التوكين
+  // console.log("Full response:", response);
+  // console.log("Google ID Token:", response.credential); // هون التوكين
   auth.loginWithGoogleToken(response.credential)
 }
 </script>
@@ -167,8 +165,11 @@ function handleGoogleResponse(response: any) {
     </ClientOnly>
     <div style="padding:0 20px;">
       <span class="font-semibold block m-auto text-center mb-2">Or</span>
-      <!-- login by google -->
-      <div class="g_id_signin" data-type="standard"></div>
+      <!-- <div id="g_id_onload" data-client_id="825528766846-gbq9m05amb2rdbdk5pv9bvp89b4fgqtf.apps.googleusercontent.com"
+        data-callback="handleGoogleResponse">
+      </div> -->
+      <div id="g_id_signin" data-type="standard">
+      </div>
     </div>
   </div>
 </template>
