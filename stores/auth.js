@@ -100,7 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function loginWithGoogleToken(googleIdToken) {
+   function loginWithGoogleToken(googleIdToken) {
     const config = useRuntimeConfig()
     return $fetch(`${config.public.apiBase}/auth/google`, {
       method: 'POST',
@@ -109,6 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = res.data.user
       accessToken.value = res.data.token
       refreshToken.value = res.data.refreshToken
+      navigateTo('/')
       return res
     })
   }
