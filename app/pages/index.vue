@@ -8,7 +8,7 @@
       <ClientOnly>
         <BodyShine />
       </ClientOnly>
-      <h1 class="title text-3xl">{{ $t('Beyond limits with ChatGPT + Gemini') }}</h1>
+      <!-- <h1 class="title text-3xl">{{ $t('Beyond limits with ChatGPT + Gemini') }}</h1> -->
       <!-- Chat Section (SPA) -->
 
       <ClientOnly>
