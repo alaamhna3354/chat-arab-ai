@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
-  middleware: ['guest-client'] // بدون .client.ts
+   layout: 'empty',
+   middleware: ['guest-client'] // بدون .client.ts
 })
 import * as v from 'valibot'
 import { reactive, ref, computed } from 'vue'
