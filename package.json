@@ -10,9 +10,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/ui": "^3.3.3",
+    "@ai-sdk/vue": "^2.0.40",
+    "@nuxt/ui": "^4.0.0",
     "@nuxtjs/i18n": "^10.0.6",
     "@pinia/nuxt": "^0.11.2",
+    "ai": "^5.0.40",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.0",
     "nuxt": "^4.1.0",

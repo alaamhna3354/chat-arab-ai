@@ -67,7 +67,7 @@
     transition: box-shadow .25s;
     height: 100vh;
     @media (max-width:768px) {
-      height: 600px;
+      height: 100%;
     }
     &::before {
       content: '';

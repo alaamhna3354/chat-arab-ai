@@ -1,10 +1,12 @@
 <template>
-  <UApp>
-    <div :class="`app-${locale}`">
-      <NuxtRouteAnnouncer />
-      <NuxtPage />
-    </div>
-  </UApp>
+  <NuxtLayout>
+    <UApp>
+      <div :class="`app-${locale}`">
+        <NuxtRouteAnnouncer />
+        <NuxtPage />
+      </div>
+    </UApp>
+  </NuxtLayout>
 </template>
 <script>
 import './assets/css/main.scss';

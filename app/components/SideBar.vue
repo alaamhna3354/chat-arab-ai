@@ -11,8 +11,8 @@
                         class="rotate hover-open-sidebar size-5 text-[#999]" />
 
                 </div>
-                <button class="hide-close rotate" :class="locale" @click="emit('toggle-sidebar')">
-                    <UIcon name="streamline-plump:book-1-solid" class="size-5 text-[#999]" />
+                <button class="hide-close" :class="locale" @click="emit('toggle-sidebar')">
+                    <UIcon name="iconamoon:close" class="size-8 text-[#999]" />
                 </button>
             </div>
             <button class="chats-but">
@@ -31,19 +31,29 @@
         <!-- New Chat -->
 
         <!-- Chat History -->
-        <div class="hide-close">
+        <div class="hide-close" v-if="chat.AllConversations.length > 0">
             <div style="color: #8f8f8f;font-weight: 500;">{{ $t("Chats") }}</div>
             <ul>
-                <li v-for="chat in chats" :key="chat.id">
-                    <button class="chats-but">
-                        {{ chat.title }}
-                    </button>
+                <li v-for="conv in chat.AllConversations" :key="conv.id">
+                    <NuxtLink :to="`/chat/${conv.id}`">
+                        <button class="chats-but conversation-item">
+                            <span> {{ conv.title }}</span>
+                            <UDropdownMenu :items="[[{
+                                label: 'Delete',
+                                color: 'error',
+                                icon: 'i-lucide-trash',
+                                onSelect: () => onDeleteConversation(conv.id)
+                            }]]" :ui="{ content: 'w-48' }">
+                                <UButton color="neutral" variant="ghost" icon="pepicons-pencil:dots-x" />
+                            </UDropdownMenu>
+                        </button>
+                    </NuxtLink>
                 </li>
             </ul>
         </div>
 
-        <UDropdownMenu v-if="auth.user" :items="items" :ui="{
-            content: 'w-48' 
+        <UDropdownMenu v-if="auth.user" :items="UserDropDown" :ui="{
+            content: 'w-48'
         }">
             <button class="chats-but">
                 <UAvatar :alt="auth.user.name" size="md" />
@@ -56,82 +66,90 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useAuthStore } from '../../stores/auth'
+import { useChatStore } from '../../stores/chat'
+import { useI18n } from 'vue-i18n'
+import { useToast, useOverlay } from '#imports'
+
+// المودالات
+import LogoutModal from './Modals/LogoutModal.vue'
+import DeleteConversation from './Modals/DeleteConversation.vue'
+
+// stores
 const auth = useAuthStore()
+const chat = useChatStore()
+
+// state
+const loading = ref(true)
+const count = ref(0)
+const toast = useToast()
+
+onMounted(async () => {
+    try {
+        await chat.GetConversation()
+    } finally {
+        loading.value = false
+    }
+})
+
 const emit = defineEmits(['toggle-sidebar'])
 const { locale } = useI18n()
 
-const chats = ref([
-    { id: 1, title: "نصائح العمل مع Node.js" },
-    { id: 2, title: "مواقع لاختيار ألوان متناسقة" },
-    { id: 3, title: "Pug to HTML conversion" },
-])
-// user DropDown
+// دالة المساعدة
+const overlay = useOverlay()
+
+function useModalConfirm(component: any) {
+  const modal = overlay.create(component)
+
+  return async (props: Record<string, any> = {}) => {
+    const instance = modal.open(props)
+    return await instance.result
+  }
+}
+
+// مودالات
+const confirmLogout = useModalConfirm(LogoutModal)
+const confirmDelete = useModalConfirm(DeleteConversation)
+
+// أكشنات
+async function onLogout() {
+    const confirmed = await confirmLogout({ count: count.value })
+    if (confirmed) {
+        auth.logout()
+        toast.add({ title: 'Logged out successfully', color: 'success' })
+    }
+}
+
+async function onDeleteConversation(convId: number) {
+    const confirmed = await confirmDelete()
+    if (confirmed) {
+        await chat.deleteConversation(convId)
+        toast.add({ title: 'Conversation deleted', color: 'success' })
+    }
+}
+
+// Dropdown items
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-const items = ref<DropdownMenuItem[][]>([
+
+const UserDropDown = ref<DropdownMenuItem[][]>([
     [
         {
             label: auth.user?.name ?? '',
-            avatar: {
-                src: ''
-            },
             type: 'label'
         }
     ],
     [
-        {
-            label: 'Profile',
-            icon: 'i-lucide-user'
-        },
-        {
-            label: 'Settings',
-            icon: 'i-lucide-cog',
-        },
+        { label: 'Profile', icon: 'i-lucide-user' },
+        { label: 'Settings', icon: 'i-lucide-cog' },
     ],
     [
         {
             label: 'Logout',
             icon: 'i-lucide-log-out',
-            onSelect() {
-                open()
-    }
-
+            onSelect: onLogout
         }
     ]
 ])
-import  LogoutModal  from './LogoutModal.vue';
-
-const count = ref(0)
-
-const toast = useToast()
-const overlay = useOverlay()
-
-const modal = overlay.create(LogoutModal)
-
-async function open() {
-  const instance = modal.open({
-    count: count.value
-  })
-
-  const shouldIncrement = await instance.result
-
-  if (shouldIncrement) {
-    count.value++
-
-    toast.add({
-      title: `Log out Success`,
-      color: 'success',
-      id: 'modal-success'
-    })
-
-    // Update the count
-    modal.patch({
-      count: count.value
-    })
-    return
-  }
-
-}
 </script>

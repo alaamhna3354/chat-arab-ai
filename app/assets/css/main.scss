@@ -8,7 +8,10 @@ body {
     background-color: #F7F7F7;
     color: #21221f;
     margin: 0;
-    font-family: system-ui, sans-serif;
+    font-family: 'Noto Sans Arabic', 'Cairo',
+             ui-sans-serif, -apple-system, system-ui, Segoe UI,
+             Helvetica, Apple Color Emoji, Arial, sans-serif,
+             Segoe UI Emoji, Segoe UI Symbol;
     overflow-x: hidden;
 
 }
@@ -38,61 +41,32 @@ button {
 .main {
     display: flex;
     position: relative;
+
     &.open {
         .body-content {
             margin-inline-start: 260px;
         }
+
+        @media (max-width:768px) {
+            .side-bar {
+                &.en {
+                    left: 0;
+                }
+
+                &.ar {
+                    right: 0;
+                }
+            }
+        }
     }
+
     .side-bar {
-        position: absolute;
+        position: fixed;
         z-index: 2;
         top: 0;
         background: linear-gradient(to bottom, #e4eaf6, #fff);
         width: 55px;
         overflow: hidden;
-        &.en {
-            left: 0;
-        }
-
-        &.ar {
-            right: 0;
-        }
-        .hover-open-sidebar{
-            display: none;
-        }
-        &.open{
-            width: 260px;
-            .head{
-                padding: 0 5px;
-                .logo{
-                    img{
-                        margin-inline-start: 0;
-                    }
-                }
-            }
-            .hide-close{
-                display: grid !important;
-               
-            }
-            .chats-but {
-                justify-content: flex-start !important;
-            }
-         
-        }
-        &:not(.open){
-            .logo{
-                &:hover{
-                    img{
-                        display: none;
-                    }
-                    .hover-open-sidebar{
-                        display: block;
-                        margin-inline-start: 5px;
-                        cursor: pointer;
-                    }
-                }
-            }
-        }
         padding: 20px 10px;
         height: 100%;
         border-inline-end: 1px solid #e6e6e6;
@@ -101,18 +75,94 @@ button {
         display: grid;
         align-content: space-between;
 
+        &.en {
+            left: 0;
+
+            @media (max-width:768px) {
+                left: -60px;
+            }
+        }
+
+        &.ar {
+            @media (max-width:768px) {
+                right: -60px;
+            }
+        }
+
+        .hover-open-sidebar {
+            display: none;
+        }
+
+        &.open {
+            width: 260px;
+
+            .head {
+                .logo {
+                    img {
+                        margin-inline-start: 0;
+                    }
+                }
+            }
+
+            .hide-close {
+                display: grid !important;
+
+            }
+
+            .chats-but {
+                justify-content: flex-start !important;
+
+                &.conversation-item {
+
+                    justify-content: space-between !important;
+                }
+            }
+
+        }
+
+        &:not(.open) {
+            justify-content: center;
+
+            @media (min-width:768px) {
+                .logo {
+                    width: 100%;
+                    max-width: 42px;
+
+                    a {
+                        display: flex;
+                        justify-content: center;
+                    }
+
+                    &:hover {
+                        img {
+                            display: none;
+                        }
+
+                        .hover-open-sidebar {
+                            display: block;
+                            margin: 0 auto;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+        }
+
+
         .head {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
             height: 36px;
+
             .logo {
-                img{
+                img {
                     margin-inline-start: 5px;
                 }
+
                 font-weight: 900;
-               
+
             }
 
             button {
@@ -137,13 +187,14 @@ button {
             margin-bottom: 2px;
             border-radius: 5px;
             cursor: pointer;
-           
+
             &:hover {
                 background-color: #e6e6e6;
             }
+
         }
 
-        .hide-close{
+        .hide-close {
             display: none !important;
         }
     }
@@ -152,12 +203,12 @@ button {
         position: relative;
         z-index: 1;
         width: 100%;
-        padding:16px 20px;
+        padding: 16px 20px;
         transition: .3s;
         margin-inline-start: 55px;
 
         @media (max-width:768px) {
-            margin-inline-start: 55px !important;
+            margin-inline-start: 0 !important;
         }
     }
 

@@ -1,27 +1,105 @@
-.btn{
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    font-size: .875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: .3s;
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: .3s;
 
 }
-.btn-main{
-    border: 1px solid #21221f;
-    background-color: #21221f;
-    color: #fff;
-    &:hover{
-        background-color: #fff;
-        color: #21221f;
-    }
-}
-.btn-secondary{
-    background-color: transparent;
+
+.btn-main {
+  border: 1px solid #21221f;
+  background-color: #21221f;
+  color: #fff;
+
+  &:hover {
+    background-color: #fff;
     color: #21221f;
+  }
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #21221f;
+  border: 1px solid #d6d6d6;
+
+  &:hover {
+    background-color: #d6d6d6;
+  }
+}
+
+.chat-box {
+  display: grid;
+
+  @media (max-width:768px) {
+    margin-top: 40px;
+  }
+
+  .messages {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    /* يضيف smooth scroll تلقائي */
+    max-height: 450px;
+    padding: 20px;
+    margin-top: 25px;
+    scrollbar-width: none;
+    width: 80%;
+    justify-self: center;
+  }
+
+  form {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 25px;
     border: 1px solid #d6d6d6;
-    &:hover{
-        background-color: #d6d6d6;
+    background-color: #fff;
+    width: 700px;
+    margin: 0 auto;
+
+    @media (max-width:768px) {
+      width: 100%;
     }
+
+    textarea {
+      width: 100%;
+      font-size: 16px;
+      font-weight: 500;
+      outline: none;
+      border: none;
+      background-color: transparent;
+      min-height: 40px !important;
+      max-height: 200px !important;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      resize: none;
+      &::placeholder {
+        color: #6c6c6c;
+      }
+    }
+
+    .send {
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      background-color: #21221f;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-content: center;
+
+      span {
+        color: #fff;
+      }
+
+      &.empty {
+        background-color: transparent;
+        cursor: no-drop;
+        opacity: 0.4;
+        background-color: #21221f;
+      }
+    }
+
+  }
 }

@@ -1,8 +1,10 @@
 <template>
     <header>
-        <h1 class="logo">
+        <UIcon @click="emit('toggle-sidebar')" name="heroicons:bars-3-center-left-16-solid" :class="locale"
+        class="open-side-bar size-6 text-[#999] cursor-pointer" />
+        <NuxtLink to="/" class="logo">
             <img width="100" height="100" src="../assets/img/logo.png" alt="">
-        </h1>
+        </NuxtLink>
         <ClientOnly>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main" to="/login">{{ $t('Log in') }}</NuxtLink>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/signup">{{ $t('Sign up') }}</NuxtLink>
@@ -24,6 +26,7 @@ const { locale, locales, setLocale } = useI18n()
 import { useAuthStore } from '../../stores/auth'
 const auth = useAuthStore()
 
+const emit = defineEmits(['toggle-sidebar'])
 // بدل show و dropdown، نعمل دالة لتبديل اللغة مباشرة
 const toggleLocale = () => {
     // لنبدل للغة الثانية مباشرة
@@ -42,8 +45,13 @@ header {
     display: flex;
     align-items: center;
     gap: 1rem;
-
-    h1.logo {
+    padding-top: 8px;
+    .open-side-bar{
+        @media (min-width:768px) {
+            display: none;
+        }
+    }
+    .logo {
         margin-inline-end: auto;
 
         span {

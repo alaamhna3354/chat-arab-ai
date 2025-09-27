@@ -4,13 +4,13 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{ close: [boolean] }>()
-import { useAuthStore } from '../../stores/auth'
+import { useAuthStore } from '../../../stores/auth'
 const auth = useAuthStore()
 </script>
 
 <template>
   <UModal
-    :close="{ onClick: () => emit('close', false) }"
+    @click="emit('close', false)"
     :title="`Are you sure you want to log out?`"
   >
     <template #footer>
