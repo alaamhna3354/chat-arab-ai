@@ -1,13 +1,21 @@
 <template>
     <header>
         <UIcon @click="emit('toggle-sidebar')" name="heroicons:bars-3-center-left-16-solid" :class="locale"
-        class="open-side-bar size-6 text-[#999] cursor-pointer" />
+            class="open-side-bar size-6 text-[#999] cursor-pointer" />
         <NuxtLink to="/" class="logo">
             <img width="100" height="100" src="../assets/img/logo.png" alt="">
         </NuxtLink>
         <ClientOnly>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main" to="/login">{{ $t('Log in') }}</NuxtLink>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/signup">{{ $t('Sign up') }}</NuxtLink>
+            <NuxtLink v-if="auth.isAuthenticated" to="/pricing-plans">
+                <UButton class="btn btn-secondary" icon="i-lucide-rocket" color="neutral" variant="ghost" :ui="{
+                    leadingIcon: 'text-info'
+                }">
+                  {{ $t('Upgrade') }}
+                </UButton>
+            </NuxtLink>
+
         </ClientOnly>
         <div class="languages" @click="toggleLocale">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -46,11 +54,13 @@ header {
     align-items: center;
     gap: 1rem;
     padding-top: 8px;
-    .open-side-bar{
+
+    .open-side-bar {
         @media (min-width:768px) {
             display: none;
         }
     }
+
     .logo {
         margin-inline-end: auto;
 

@@ -46,7 +46,7 @@ function autoResize() {
   const textarea = document.getElementById('textarea');
   if (!textarea) return
   textarea.style.height = 'auto'
-  textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px'
+  textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
 }
 
 const createNewChat = async () => {

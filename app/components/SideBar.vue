@@ -131,7 +131,8 @@ async function onDeleteConversation(convId: number) {
 
 // Dropdown items
 import type { DropdownMenuItem } from '@nuxt/ui'
-
+import { useUiStore } from '../composables/useUiStore'
+const ui = useUiStore()
 
 const UserDropDown = ref<DropdownMenuItem[][]>([
     [
@@ -141,7 +142,7 @@ const UserDropDown = ref<DropdownMenuItem[][]>([
         }
     ],
     [
-        { label: 'Profile', icon: 'i-lucide-user' },
+        { label: 'Profile', icon: 'i-lucide-user', onSelect: () => ui.openProfileDrawer()  },
         { label: 'Settings', icon: 'i-lucide-cog' },
     ],
     [
