@@ -113,6 +113,32 @@ export const useAuthStore = defineStore('auth', () => {
       return res
     })
   }
+  function updateProfile(payload) {
+    const config = useRuntimeConfig()
+    return $fetch(`${config.public.apiBase}/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`
+      },
+      body: payload
+    }).then((res) => {
+      user.value = res.data.user
+      return res
+    })
+  }
+  function changePassword(payload) {
+    const config = useRuntimeConfig()
+    return $fetch(`${config.public.apiBase}/auth/change-password`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`
+      },
+      body: payload
+    }).then((res) => {
+      user.value = res.data.user
+      return res
+    })
+  }
   return {
     user,
     accessToken,
@@ -123,7 +149,9 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUser,
     refreshAccessToken,
     logout,
-    loginWithGoogleToken
+    loginWithGoogleToken,
+    updateProfile,
+    changePassword
   }
 }, {
   persist: true // يخزن القيم بالـ localStorage

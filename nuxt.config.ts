@@ -38,7 +38,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
     googleClientId: "825528766846-gbq9m05amb2rdbdk5pv9bvp89b4fgqtf.apps.googleusercontent.com",
-    apiBase: "https://arabai-825528766846.europe-west1.run.app/api" 
+    apiBase: "https://arabai-825528766846.us-central1.run.app/api" 
     }
   },
   modules: ['@nuxtjs/i18n','@pinia/nuxt','@nuxt/ui'],
