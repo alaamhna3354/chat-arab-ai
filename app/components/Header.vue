@@ -7,12 +7,13 @@
         </NuxtLink>
         <ClientOnly>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main" to="/login">{{ $t('Log in') }}</NuxtLink>
-            <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/signup">{{ $t('Sign up') }}</NuxtLink>
+            <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary signup-link" to="/signup">{{ $t('Sign up')
+                }}</NuxtLink>
             <NuxtLink v-if="auth.isAuthenticated" to="/pricing-plans">
                 <UButton class="btn btn-secondary" icon="i-lucide-rocket" color="neutral" variant="ghost" :ui="{
                     leadingIcon: 'text-info'
                 }">
-                  {{ $t('Upgrade') }}
+                    {{ $t('Upgrade') }}
                 </UButton>
             </NuxtLink>
 
@@ -77,6 +78,12 @@ header {
             /* modern browser version */
             background-clip: text;
             color: transparent;
+        }
+    }
+
+    .signup-link {
+        @media (max-width:768px) {
+            display: none;
         }
     }
 

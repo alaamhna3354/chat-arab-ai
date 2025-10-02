@@ -16,14 +16,14 @@
                 </button>
             </div>
             <button class="chats-but">
-                <UIcon name="fa-solid:plus-square" class=" size-4 text-[#21221f]" />
+                <UIcon name="cuida:edit-outline" class=" size-4 text-[#21221f]" />
                 <span class="hide-close ms-2">
                     {{ $t('New chat') }}
                 </span>
             </button>
             <!-- Search Chat -->
             <button class="chats-but">
-                <UIcon name="fa-solid:search-plus" class="size-4 text-[#21221f]" />
+                <UIcon name="lucide:search" class="size-4 text-[#21221f]" />
                 <span class="ms-2 hide-close">{{ $t('Search chats') }}</span>
             </button>
         </div>
@@ -31,9 +31,9 @@
         <!-- New Chat -->
 
         <!-- Chat History -->
-        <div class="hide-close" v-if="chat.AllConversations.length > 0">
+        <div class="hide-close mt-5" v-if="chat.AllConversations.length > 0">
             <div style="color: #8f8f8f;font-weight: 500;">{{ $t("Chats") }}</div>
-            <ul>
+            <ul class="chats-list">
                 <li v-for="conv in chat.AllConversations" :key="conv.id">
                     <NuxtLink :to="`/chat/${conv.id}`">
                         <button class="chats-but conversation-item">
@@ -52,7 +52,7 @@
             </ul>
         </div>
 
-        <UDropdownMenu v-if="auth.user" :items="UserDropDown" :ui="{
+        <UDropdownMenu class="footer" v-if="auth.user" :items="UserDropDown" :ui="{
             content: 'w-48'
         }">
             <button class="chats-but">

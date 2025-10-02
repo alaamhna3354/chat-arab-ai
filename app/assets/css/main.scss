@@ -9,9 +9,9 @@ body {
     color: #21221f;
     margin: 0;
     font-family: 'Noto Sans Arabic', 'Cairo',
-             ui-sans-serif, -apple-system, system-ui, Segoe UI,
-             Helvetica, Apple Color Emoji, Arial, sans-serif,
-             Segoe UI Emoji, Segoe UI Symbol;
+        ui-sans-serif, -apple-system, system-ui, Segoe UI,
+        Helvetica, Apple Color Emoji, Arial, sans-serif,
+        Segoe UI Emoji, Segoe UI Symbol;
     overflow-x: hidden;
 
 }
@@ -72,8 +72,8 @@ button {
         border-inline-end: 1px solid #e6e6e6;
         min-height: 100vh;
         transition: .3s;
-        display: grid;
-        align-content: space-between;
+        overflow-y: auto;
+        scrollbar-width: thin;
 
         &.en {
             left: 0;
@@ -118,6 +118,9 @@ button {
                 }
             }
 
+            .footer {
+                width: 230px;
+            }
         }
 
         &:not(.open) {
@@ -175,6 +178,23 @@ button {
             }
         }
 
+        .chats-list {
+            max-width: 240px;
+
+            li {
+                button {
+                    padding: 3px 5px;
+
+                    span {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+
         .chats-but {
             background-color: transparent;
             border: none;
@@ -196,6 +216,14 @@ button {
 
         .hide-close {
             display: none !important;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            z-index: 3;
+            width: 40px;
+            background: #fff;
         }
     }
 

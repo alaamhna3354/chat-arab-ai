@@ -1,7 +1,8 @@
 <template>
     <UDrawer v-model:open="ui.isProfileDrawerOpen" direction="left" inset handle-only>
         <template #content>
-            <UTabs class="min-w-96 min-h-96 size-full m-4" color="neutral" :items="items">
+            <UTabs class="min-w-60 sm:min-w-72 md:min-w-96 min-h-96 size-full m-4" color="neutral" variant="link"
+                :items="items" :ui="{ trigger: 'grow' }">
 
                 <!-- Account Tab -->
                 <template #account>
@@ -13,7 +14,8 @@
                         <UFormField label="Email" name="email">
                             <UInput v-model="profileState.email" class="w-full" />
                         </UFormField>
-                        <UButton type="submit" color="primary" label="Save Changes" class="mt-4 self-end" />
+                        <UButton type="submit" color="neutral" :loading="profileLoading" label="Save Changes"
+                            class="mt-4 self-center p-2" />
                     </UForm>
                 </template>
 
@@ -61,7 +63,8 @@
                             </UInput>
                         </UFormField>
 
-                        <UButton type="submit" color="primary" label="Update Password" class="mt-4 self-end" />
+                        <UButton type="submit" color="neutral" :loading="PasswordLoading" label="Update Password"
+                            class="mt-4 self-center p-2" loading-icon="i-lucide-loader" />
                     </UForm>
                 </template>
 
@@ -145,44 +148,49 @@ watch(
 )
 
 // ------------------ Handlers ------------------ //
+const profileLoading = ref(false)
 const onUpdateProfile = async (event: FormSubmitEvent<ProfileSchema>) => {
-  try {
-    await auth.updateProfile(event.data)
-    ui.isProfileDrawerOpen = false
+    profileLoading.value = true;
+    try {
+        await auth.updateProfile(event.data)
+        ui.isProfileDrawerOpen = false
 
-    toast.add({
-      title: t('Success'),
-      description: t('Profile updated successfully'),
-      color: 'success'
-    })
-  } catch (err: any) {
-    console.error('Update profile failed:', err)
+        toast.add({
+            title: t('Success'),
+            description: t('Profile updated successfully'),
+            color: 'success'
+        })
+        profileLoading.value = false;
+        
+    } catch (err: any) {
+        profileLoading.value = false;
+        let errors: any[] = []
 
-    let errors: any[] = []
+        if (err?.response?._data) {
+            // لو السيرفر رجع JSON
+            errors = Array.isArray(err.response._data.errors)
+                ? err.response._data.errors
+                : [{ msg: err.response._data.message }]
+        } else if (Array.isArray(err?.errors)) {
+            errors = err.errors
+        } else {
+            errors = [{ msg: err.message }]
+        }
 
-    if (err?.response?._data) {
-      // لو السيرفر رجع JSON
-      errors = Array.isArray(err.response._data.errors)
-        ? err.response._data.errors
-        : [{ msg: err.response._data.message }]
-    } else if (Array.isArray(err?.errors)) {
-      errors = err.errors
-    } else {
-      errors = [{ msg: err.message }]
+        errors.forEach(e => {
+            toast.add({
+                title: t('Error'),
+                description: e.msg || t('Failed to update profile'),
+                color: 'warning'
+            })
+        })
     }
-
-    errors.forEach(e => {
-      toast.add({
-        title: t('Error'),
-        description: e.msg || t('Failed to update profile'),
-        color: 'warning'
-      })
-    })
-  }
 }
 
 
+const PasswordLoading = ref(false)
 const onChangePassword = async (event: FormSubmitEvent<PasswordSchema>) => {
+    PasswordLoading.value = true;
     try {
         await auth.changePassword({
             currentPassword: event.data.currentPassword,
@@ -194,8 +202,11 @@ const onChangePassword = async (event: FormSubmitEvent<PasswordSchema>) => {
             description: t('Password changed successfully'),
             color: 'success'
         })
+        PasswordLoading.value = false;
+
     } catch (err: any) {
         // حاول نقرأ body من الـ FetchError
+        PasswordLoading.value = false;
         let errors: any[] = []
 
         if (err?.response?._data) {

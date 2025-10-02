@@ -97,6 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       accessToken.value = null
       refreshToken.value = null
+      navigateTo('/')
     }
   }
 

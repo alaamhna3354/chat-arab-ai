@@ -84,12 +84,11 @@ const md = new MarkdownIt({
   highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return `
-          <pre class="hljs">
-            <code>${hljs.highlight(str, { language: lang }).value}</code>
-            <button class="copy-btn" data-code="${encodeURIComponent(str)}">Copy</button>
-          </pre>`
-      } catch { }
+        return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang }).value}</code><button class="copy-btn" data-code="${encodeURIComponent(str)}">Copy</button></pre>`
+      } catch {
+        // fallback لو صار خطأ
+        return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
+      }
     }
     return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
   }
@@ -165,7 +164,7 @@ const sendMessage = async () => {
         if (msg) msg.content = currentText
         await nextTick()
         scrollToBottom()
-        await new Promise(r => setTimeout(r, 15)) // سرعة الطباعة
+        await new Promise(r => setTimeout(r, 5)) // سرعة الطباعة
       }
     }
   } catch (err) {
@@ -176,11 +175,8 @@ const sendMessage = async () => {
 onMounted(async () => {
   try {
     await chat.GetMessagesApi(conversationId)
-
     // انتظر Vue تحدث الـ DOM
-    await nextTick()
     await nextTick() // nextTick إضافي للتأكد من render كامل للرسائل
-
     // Scroll بعد التأكد من DOM جاهز
     requestAnimationFrame(() => {
       scrollToBottom()
