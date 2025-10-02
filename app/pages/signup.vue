@@ -173,7 +173,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </ul>
       </div>
 
-      <UButton type="submit" class="w-full h-[40px] text-lg flex justify-center items-center" :disabled="loading || cooldown > 0" color="neutral">
+      <UButton :loading="loading" type="submit" class="w-full h-[40px] text-lg flex justify-center items-center" :disabled="loading || cooldown > 0" color="neutral">
         <span v-if="loading">{{ $t('Please wait') }}...</span>
         <span v-else-if="cooldown > 0">{{ $t('Wait') }} {{ cooldown }}s</span>
         <span v-else>{{ $t('Sign up') }}</span>

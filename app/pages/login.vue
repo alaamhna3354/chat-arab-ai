@@ -140,19 +140,10 @@ function handleGoogleResponse(response: any) {
             </UInput>
           </UFormField>
 
-          <UProgress :color="color" :indicator="text" :model-value="score" :max="4" size="sm" />
-
-          <ul id="password-strength" class="space-y-1" aria-label="Password requirements">
-            <li v-for="(req, index) in strength" :key="index" class="flex items-center gap-1"
-              :class="req.met ? 'text-success' : 'text-muted'">
-              <UIcon :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'" class="size-4 shrink-0" />
-              <span class="text-xs font-light">{{ req.text }}</span>
-            </li>
-          </ul>
         </div>
 
-        <UButton type="submit" class="w-full h-[40px] text-lg flex justify-center items-center"
-          :disabled="loading || cooldown > 0" color="neutral">
+        <UButton :loading="loading" type="submit" class="w-full h-[40px] text-lg flex justify-center items-center"
+          :disabled="loading || cooldown > 0" color="neutral" loading-icon="i-lucide-loader">
           <span v-if="loading">{{ $t('Please wait') }}...</span>
           <span v-else-if="cooldown > 0">{{ $t('Wait') }} {{ cooldown }}s</span>
           <span v-else>{{ $t('Log in') }}</span>
