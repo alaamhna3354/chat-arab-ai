@@ -108,7 +108,42 @@ export const useChatStore = defineStore('chat', () => {
       throw err
     }
   }
-
+  // Delete Conversation Id
+  async function deleteConversation(conversationId) {
+    const config = useRuntimeConfig()
+    try {
+      const data = await $fetch(`${config.public.apiBase}/chat/conversations/${conversationId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
+          'Content-Type': 'application/json'
+        },
+      })
+  
+      if (data) {
+        // 1. امسح المحادثة من AllConversations
+        if (Array.isArray(AllConversations.value)) {
+          AllConversations.value = AllConversations.value.filter(conv => conv.id !== conversationId)
+        } else {
+          delete AllConversations.value[conversationId]
+        }
+  
+        // 2. امسح الرسائل التابعة لها من conversations
+        delete conversations.value[conversationId]
+  
+        // 3. (اختياري) لو الرسائل المعروضة كانت من نفس المحادثة
+        if (Messages.value?.length && Messages.value[0]?.conversationId === conversationId) {
+          Messages.value = []
+        }
+      }
+  
+      return data
+    } catch (err) {
+      console.error('Delete Conversation failed:', err)
+      throw err
+    }
+  }
+  
   return {
     conversations,
     AllConversations,
@@ -117,6 +152,7 @@ export const useChatStore = defineStore('chat', () => {
     getMessages,
     CreateConversation,
     GetConversation,
-    GetMessagesApi
+    GetMessagesApi,
+    deleteConversation
   }
 })
