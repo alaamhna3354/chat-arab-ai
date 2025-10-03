@@ -13,7 +13,7 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref , watch} from 'vue'
 import Profile from '../components/Modals/Profile.vue'
 import { useAuthStore } from '../../stores/auth'
 const auth = useAuthStore()
@@ -22,4 +22,8 @@ const isSidebarOpen = ref(false)
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value
 }
+const route = useRoute()
+watch(route, async () => {
+    isSidebarOpen.value = false;
+})
 </script>

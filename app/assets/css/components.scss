@@ -45,7 +45,12 @@
     margin-top: 25px;
     scrollbar-width: none;
     width: 80%;
+    max-width: 760px;
     justify-self: center;
+    @media (max-width:768px) {
+      width: 100%;
+      padding:20px 5px;
+    }
   }
 
   form {
@@ -54,7 +59,8 @@
     border-radius: 25px;
     border: 1px solid #d6d6d6;
     background-color: #fff;
-    width: 700px;
+    width: 80%;
+    max-width: 760px;
     margin: 0 auto;
 
     @media (max-width:768px) {
