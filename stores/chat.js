@@ -109,7 +109,7 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
   // Delete Conversation Id
-  async function deleteConversation(conversationId) {
+  async function DeleteConversation(conversationId) {
     const config = useRuntimeConfig()
     try {
       const data = await $fetch(`${config.public.apiBase}/chat/conversations/${conversationId}`, {
@@ -121,20 +121,21 @@ export const useChatStore = defineStore('chat', () => {
       })
   
       if (data) {
-        // 1. امسح المحادثة من AllConversations
+        // if user in same conversationId route 
+        if (Messages.value?.length && Messages.value[0]?.conversationId === conversationId) {
+          Messages.value = []
+          navigateTo('/')
+        }
+  
+        // Delete Conversation from AllConversations
         if (Array.isArray(AllConversations.value)) {
           AllConversations.value = AllConversations.value.filter(conv => conv.id !== conversationId)
         } else {
           delete AllConversations.value[conversationId]
         }
   
-        // 2. امسح الرسائل التابعة لها من conversations
+        // Delete Messages from AllConversations
         delete conversations.value[conversationId]
-  
-        // 3. (اختياري) لو الرسائل المعروضة كانت من نفس المحادثة
-        if (Messages.value?.length && Messages.value[0]?.conversationId === conversationId) {
-          Messages.value = []
-        }
       }
   
       return data
@@ -143,6 +144,8 @@ export const useChatStore = defineStore('chat', () => {
       throw err
     }
   }
+  
+  
   
   return {
     conversations,
@@ -153,6 +156,6 @@ export const useChatStore = defineStore('chat', () => {
     CreateConversation,
     GetConversation,
     GetMessagesApi,
-    deleteConversation
+    DeleteConversation
   }
 })

@@ -15,12 +15,14 @@
                     <UIcon name="iconamoon:close" class="size-8 text-[#999]" />
                 </button>
             </div>
-            <button class="chats-but">
-                <UIcon name="cuida:edit-outline" class=" size-4 text-[#21221f]" />
-                <span class="hide-close ms-2">
-                    {{ $t('New chat') }}
-                </span>
-            </button>
+            <NuxtLink to="/">
+                <button class="chats-but">
+                    <UIcon name="cuida:edit-outline" class=" size-4 text-[#21221f]" />
+                    <span class="hide-close ms-2">
+                        {{ $t('New chat') }}
+                    </span>
+                </button>
+            </NuxtLink>
             <!-- Search Chat -->
             <button class="chats-but">
                 <UIcon name="lucide:search" class="size-4 text-[#21221f]" />
@@ -100,12 +102,12 @@ const { locale } = useI18n()
 const overlay = useOverlay()
 
 function useModalConfirm(component: any) {
-  const modal = overlay.create(component)
+    const modal = overlay.create(component)
 
-  return async (props: Record<string, any> = {}) => {
-    const instance = modal.open(props)
-    return await instance.result
-  }
+    return async (props: Record<string, any> = {}) => {
+        const instance = modal.open(props)
+        return await instance.result
+    }
 }
 
 // مودالات
@@ -124,7 +126,7 @@ async function onLogout() {
 async function onDeleteConversation(convId: number) {
     const confirmed = await confirmDelete()
     if (confirmed) {
-        await chat.deleteConversation(convId)
+        await chat.DeleteConversation(convId)
         toast.add({ title: 'Conversation deleted', color: 'success' })
     }
 }
@@ -142,7 +144,7 @@ const UserDropDown = ref<DropdownMenuItem[][]>([
         }
     ],
     [
-        { label: 'Profile', icon: 'i-lucide-user', onSelect: () => ui.openProfileDrawer()  },
+        { label: 'Profile', icon: 'i-lucide-user', onSelect: () => ui.openProfileDrawer() },
         { label: 'Settings', icon: 'i-lucide-cog' },
     ],
     [

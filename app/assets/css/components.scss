@@ -41,7 +41,7 @@
     scroll-behavior: smooth;
     /* يضيف smooth scroll تلقائي */
     max-height: 450px;
-    padding: 20px;
+    padding:20px 5px;
     margin-top: 25px;
     scrollbar-width: none;
     width: 80%;
@@ -49,7 +49,6 @@
     justify-self: center;
     @media (max-width:768px) {
       width: 100%;
-      padding:20px 5px;
     }
   }
 

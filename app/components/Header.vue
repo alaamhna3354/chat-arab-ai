@@ -54,7 +54,6 @@ header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding-top: 8px;
 
     .open-side-bar {
         @media (min-width:768px) {
