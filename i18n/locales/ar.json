@@ -18,12 +18,17 @@
     "Wait": "انتظر",
     "Please wait": "يرجى الانتظار",
     "Don’t have an account?": "ليس لديك حساب؟",
-    "have an account?":"هل تملك حساب؟",
+    "have an account?": "هل تملك حساب؟",
     "Validation Error": "خطأ في التحقق",
     "Please fill in all fields.": "يرجى ملء جميع الحقول.",
     "Success": "نجاح",
     "Logged in successfully!": "تم تسجيل الدخول بنجاح!",
-    "Sign up successfully!":"تم تسجيل الحساب بنجاح!",
+    "Sign up successfully!": "تم تسجيل الحساب بنجاح!",
     "Error": "خطأ",
-    "Upgrade":"ترقية"
+    "Upgrade": "ترقية",
+    "Today": "اليوم",
+    "Yesterday": "أمس",
+    "Last Week": "الأسبوع الماضي",
+    "Last Month": "الشهر الماضي",
+    "Older": "أقدم"
 }

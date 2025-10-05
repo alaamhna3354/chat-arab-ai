@@ -24,7 +24,7 @@
                 </button>
             </NuxtLink>
             <!-- Search Chat -->
-            <button class="chats-but">
+            <button class="chats-but" @click="onSearch">
                 <UIcon name="lucide:search" class="size-4 text-[#21221f]" />
                 <span class="ms-2 hide-close">{{ $t('Search chats') }}</span>
             </button>
@@ -39,7 +39,7 @@
                 <li v-for="conv in chat.AllConversations" :key="conv.id">
                     <NuxtLink :to="`/chat/${conv.id}`">
                         <button class="chats-but conversation-item">
-                            <span> {{ conv.title }}</span>
+                            <span> {{ conv.title || '' }}</span>
                             <UDropdownMenu :items="[[{
                                 label: 'Delete',
                                 color: 'error',
@@ -75,6 +75,7 @@ import { useI18n } from 'vue-i18n'
 import { useToast, useOverlay } from '#imports'
 
 // المودالات
+import SearchChats from './Modals/SearchChats.vue'
 import LogoutModal from './Modals/LogoutModal.vue'
 import DeleteConversation from './Modals/DeleteConversation.vue'
 
@@ -95,6 +96,8 @@ onMounted(async () => {
     }
 })
 
+
+
 const emit = defineEmits(['toggle-sidebar'])
 const { locale } = useI18n()
 
@@ -111,10 +114,15 @@ function useModalConfirm(component: any) {
 }
 
 // مودالات
+const confirmSearch = useModalConfirm(SearchChats)
 const confirmLogout = useModalConfirm(LogoutModal)
 const confirmDelete = useModalConfirm(DeleteConversation)
 
 // أكشنات
+async function onSearch() {
+    await confirmSearch({ conversations: chat.AllConversations })
+}
+
 async function onLogout() {
     const confirmed = await confirmLogout({ count: count.value })
     if (confirmed) {
@@ -155,4 +163,5 @@ const UserDropDown = ref<DropdownMenuItem[][]>([
         }
     ]
 ])
+
 </script>
