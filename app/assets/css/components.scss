@@ -82,7 +82,21 @@
         color: #6c6c6c;
       }
     }
+    .stop{
+      border: 1px solid rgb(255, 119, 119);
+      cursor: pointer;
+      border-radius: 50%;
+      background-color: transparent;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-content: center;
 
+      span {
+        color: rgb(250, 48, 48);
+      }
+
+    }
     .send {
       border: none;
       cursor: pointer;
