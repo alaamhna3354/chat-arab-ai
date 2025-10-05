@@ -4,47 +4,48 @@
     <div class="messages" ref="messagesContainer" @scroll="checkScroll">
       <div v-for="m in messages" :key="m.id" :class="m.role === 'user' ? 'text-right' : 'text-left'">
         <!-- رسالة البوت / Markdown -->
-        <div v-if="m.role === 'assistant'" v-html="md.render(m.content)" class="bot-message prose max-w-none">
-        </div>
+        <div v-if="m.role === 'assistant'" v-html="md.render(m.content)" class="bot-message prose max-w-none"></div>
 
         <!-- رسالة المستخدم -->
         <span v-else class="bg-blue-500 text-white px-3 py-2 rounded-lg inline-block mt-3 mb-3">
           {{ m.content }}
         </span>
       </div>
-      <!-- زر Thinking يظهر مرة واحدة -->
-      <div v-if="Thinking" class="text-left mt-2">
+
+      <!-- زر Thinking -->
+      <div v-if="isStreaming" class="text-left mt-2">
         <UButton label="Thinking..." variant="link" color="neutral" class="p-0" loading />
       </div>
     </div>
+
+    <!-- زر النزول للأسفل -->
     <UButton v-if="showScrollButton" icon="i-lucide-arrow-down"
       class="absolute bottom-20 right-4 rounded-full shadow-lg" color="neutral" @click="scrollToBottom(true)" />
+
     <!-- الفورم -->
     <form @submit.prevent="sendMessage">
-      <textarea id="textarea" v-model="input" @input="autoResize" @keyup.enter.exact.prevent="sendMessage"
-        :placeholder="$t('Ask anything')" :disabled="isSending"></textarea>
+      <textarea id="textarea" v-model="newMessage" @input="autoResize" @keyup.enter.exact.prevent="sendMessage"
+        :placeholder="$t('Ask anything')" :disabled="isStreaming"></textarea>
+
       <div class="flex justify-between items-center">
         <div>
-          <UDropdownMenu :items="[[{
-            label: 'Upload Files',
-            icon: 'akar-icons:attach',
-            onSelect: () => onDeleteConversation(conv.id)
-          }]]" :ui="{ content: 'w-48' }">
+          <UDropdownMenu :items="[[{ label: 'Upload Files', icon: 'akar-icons:attach' }]]" :ui="{ content: 'w-48' }">
             <UTooltip class="me-1" :delay-duration="0" text="Add Files">
               <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" />
             </UTooltip>
           </UDropdownMenu>
-          <UDropdownMenu :items="[[{
-            label: 'Upload Files',
-            icon: 'akar-icons:attach',
-            onSelect: () => onDeleteConversation(conv.id)
-          }]]" :ui="{ content: 'w-48' }">
+          <UDropdownMenu :items="[[{ label: 'Models', icon: 'material-symbols:page-info-rounded' }]]"
+            :ui="{ content: 'w-48' }">
             <UTooltip class="me-1" :delay-duration="0" text="Models">
               <UButton color="neutral" variant="ghost" icon="material-symbols:page-info-rounded" />
             </UTooltip>
           </UDropdownMenu>
         </div>
-        <button class="send" :class="input == '' || isSending ? 'empty' : ''" type="submit" :disabled="isSending">
+        <button v-if="isStreaming" class="stop" @click="stopStreaming">
+          <UIcon name="i-lucide-square" class="text-xl" />
+        </button>
+        <button v-else class="send" :class="newMessage == '' || isStreaming ? 'empty' : ''" type="submit"
+          :disabled="isStreaming">
           <UIcon name="majesticons:arrow-up" class="text-xl" />
         </button>
       </div>
@@ -53,49 +54,63 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '../../../stores/auth'
 import { useChatStore } from '../../../stores/chat'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
 
+// ----------------------
+// الإعدادات الأساسية
+// ----------------------
 const route = useRoute()
 const conversationId = route.params.id
 const chat = useChatStore()
-const auth = useAuthStore()
-const config = useRuntimeConfig()
 
-const input = ref('')
-const messages = computed(() => chat.getMessages(conversationId))
-const textarea = ref < HTMLTextAreaElement | null > (null)
-
-
-function autoResize() {
-  const textarea = document.getElementById('textarea');
-  if (!textarea) return
-  textarea.style.height = 'auto'
-  textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
-}
-
-// Markdown parser مع كود و copy button
+// ----------------------
+// Markdown مع تظليل الكود و copy button
+// ----------------------
 const md = new MarkdownIt({
   highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang }).value}</code><button class="copy-btn" data-code="${encodeURIComponent(str)}">Copy</button></pre>`
+        return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang }).value
+          }</code><button class="copy-btn" data-code="${encodeURIComponent(
+            str
+          )}">Copy</button></pre>`
       } catch {
-        // fallback لو صار خطأ
         return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
       }
     }
     return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
   }
 })
+
+// ----------------------
+// الحالة
+// ----------------------
+const newMessage = ref('')
+const messages = computed(() => chat.getMessages(conversationId))
 const messagesContainer = ref(null)
 const showScrollButton = ref(false)
-// Scroll سلس عند الرسائل الجديدة
+const isStreaming = ref(false)
+const currentStreamText = ref('')
+let currentStream = null
+
+// ----------------------
+// Auto resize textarea
+// ----------------------
+function autoResize() {
+  const textarea = document.getElementById('textarea')
+  if (!textarea) return
+  textarea.style.height = 'auto'
+  textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
+}
+
+// ----------------------
+// Scroll
+// ----------------------
 const scrollToBottom = (instant = false) => {
   const container = messagesContainer.value
   if (!container) return
@@ -106,84 +121,97 @@ const scrollToBottom = (instant = false) => {
     })
   })
 }
-// تحقق إذا المستخدم مو بالنهاية
+
 const checkScroll = () => {
   const container = messagesContainer.value
   if (!container) return
-  const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50
+  const nearBottom =
+    container.scrollHeight - container.scrollTop - container.clientHeight < 50
   showScrollButton.value = !nearBottom
 }
+
 watch(messages, async () => {
   await nextTick()
   scrollToBottom()
 })
-const Thinking = ref('')
-const sendMessage = async () => {
-  if (!input.value.trim()) return
-  Thinking.value = 'Thinking'
-  const userInput = input.value
-  input.value = ''
 
-  // أضف رسالة المستخدم مباشرة
+// ----------------------
+// إرسال الرسالة
+// ----------------------
+const sendMessage = async () => {
+  if (!newMessage.value.trim() || isStreaming.value) return
+
+  const userMessage = newMessage.value
+  newMessage.value = ''
+
+  // أضف رسالة المستخدم
   chat.addMessage(conversationId, {
     id: Date.now(),
     role: 'user',
-    content: userInput
+    content: userMessage,
+    timestamp: new Date()
   })
 
-  // Placeholder لرسالة البوت
+  // أضف رسالة البوت الفارغة (placeholder)
   const botMessageId = crypto.randomUUID()
   chat.addMessage(conversationId, {
     id: botMessageId,
     role: 'assistant',
-    content: '' // placeholder فارغ
+    content: ''
   })
+
   scrollToBottom()
+  isStreaming.value = true
+  currentStreamText.value = ''
 
-  try {
-    const { data } = await useFetch(`${config.public.apiBase}/chat/gemini/chat`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${auth.accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: {
-        message: userInput,
-        conversation_id: conversationId
-      }
-    })
+  // ----------------------
+  // استدعاء streamChat من store
+  // ----------------------
+  currentStream = chat.streamChat(userMessage, conversationId, 'gemini', {
+    onStart: () => {
+      console.log('🚀 Stream started')
+    },
 
-    if (data.value?.response) {
-      Thinking.value = ''
-      // أضف المحتوى تدريجيًا (streaming effect)
-      const fullText = data.value.response
-      let currentText = ''
-      for (let i = 0; i < fullText.length; i++) {
-        currentText += fullText[i]
-        const msg = chat.getMessages(conversationId).find(m => m.id === botMessageId)
-        if (msg) msg.content = currentText
-        await nextTick()
-        scrollToBottom()
-        await new Promise(r => setTimeout(r, 5)) // سرعة الطباعة
-      }
+    onChunk: (text) => {
+      currentStreamText.value += text
+      const msg = chat.getMessages(conversationId).find(
+        (m) => m.id === botMessageId
+      )
+      if (msg) msg.content = currentStreamText.value
+      scrollToBottom()
+    },
+
+    onComplete: () => {
+      isStreaming.value = false
+      currentStream = null
+      scrollToBottom()
+    },
+
+    onError: (error) => {
+      console.error('❌ Stream error:', error)
+      isStreaming.value = false
+      currentStream = null
+      scrollToBottom()
+      chat.addMessage(conversationId, {
+        id: Date.now(),
+        role: 'system',
+        content: `Error: ${error}`,
+        timestamp: new Date()
+      })
     }
-  } catch (err) {
-    console.error('Send message failed:', err)
-  }
+  })
 }
 
+// ----------------------
+// تحميل الرسائل عند الدخول
+// ----------------------
 onMounted(async () => {
   try {
     await chat.GetMessagesApi(conversationId)
-    // انتظر Vue تحدث الـ DOM
-    await nextTick() // nextTick إضافي للتأكد من render كامل للرسائل
-    // Scroll بعد التأكد من DOM جاهز
-    requestAnimationFrame(() => {
-      scrollToBottom()
-    })
-
+    await nextTick()
+    requestAnimationFrame(scrollToBottom)
   } catch (err) {
-    console.error('Failed to load conversation messages:', err)
+    console.error('Failed to load messages:', err)
   }
 
   // copy buttons
@@ -208,6 +236,20 @@ onMounted(async () => {
   })
 })
 
+// ----------------------
+// تنظيف عند مغادرة الصفحة
+// ----------------------
+const stopStreaming = () => {
+  if (currentStream?.abort) {
+    currentStream.abort()
+  }
+
+  isStreaming.value = false
+  currentStream = null
+}
+onUnmounted(() => {
+  stopStreaming()
+})
 </script>
 
 <style>

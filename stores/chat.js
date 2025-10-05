@@ -85,7 +85,79 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  // ------------------------
+  // Streaming Chat ------------------------
+  function streamChat(message, conversationId, provider, callbacks) {
+    const { onChunk, onComplete, onError, onStart } = callbacks
+    const config = useRuntimeConfig()
+    const abortController = new AbortController()
+  
+    // نبدأ الاستماع بدون await
+    const streamPromise = (async () => {
+      try {
+        onStart?.()
+  
+        const response = await fetch(`${config.public.apiBase}/chat/stream`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.accessToken}`,
+          },
+          body: JSON.stringify({
+            message,
+            conversation_id: conversationId,
+            provider
+          }),
+          signal: abortController.signal // 🔑 مهم جدًا
+        })
+  
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+  
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+  
+          const chunk = decoder.decode(value, { stream: true })
+          const lines = chunk.split('\n')
+  
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
+  
+                if (data.type === 'chunk') onChunk?.(data.text)
+                else if (data.type === 'done') {
+                  onComplete?.(data.conversation_id)
+                  return
+                } else if (data.type === 'error') {
+                  onError?.(data.message)
+                  return
+                }
+              } catch (e) {
+                console.warn('Invalid chunk:', e)
+              }
+            }
+          }
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('🚫 Stream aborted by user')
+        } else {
+          onError?.(error.message)
+        }
+      }
+    })()
+  
+    // نرجع الكائن للتحكم الفوري
+    return {
+      abort: () => abortController.abort(),
+      done: streamPromise
+    }
+  }
+  
+
   // Get Messages for Conversation Id
   async function GetMessagesApi(conversationId) {
     const config = useRuntimeConfig()
@@ -109,7 +181,7 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
   // Delete Conversation Id
-  async function deleteConversation(conversationId) {
+  async function DeleteConversation(conversationId) {
     const config = useRuntimeConfig()
     try {
       const data = await $fetch(`${config.public.apiBase}/chat/conversations/${conversationId}`, {
@@ -119,31 +191,34 @@ export const useChatStore = defineStore('chat', () => {
           'Content-Type': 'application/json'
         },
       })
-  
+
       if (data) {
-        // 1. امسح المحادثة من AllConversations
+        // if user in same conversationId route 
+        if (Messages.value?.length && Messages.value[0]?.conversationId === conversationId) {
+          Messages.value = []
+          navigateTo('/')
+        }
+
+        // Delete Conversation from AllConversations
         if (Array.isArray(AllConversations.value)) {
           AllConversations.value = AllConversations.value.filter(conv => conv.id !== conversationId)
         } else {
           delete AllConversations.value[conversationId]
         }
-  
-        // 2. امسح الرسائل التابعة لها من conversations
+
+        // Delete Messages from AllConversations
         delete conversations.value[conversationId]
-  
-        // 3. (اختياري) لو الرسائل المعروضة كانت من نفس المحادثة
-        if (Messages.value?.length && Messages.value[0]?.conversationId === conversationId) {
-          Messages.value = []
-        }
       }
-  
+
       return data
     } catch (err) {
       console.error('Delete Conversation failed:', err)
       throw err
     }
   }
-  
+
+
+
   return {
     conversations,
     AllConversations,
@@ -152,7 +227,8 @@ export const useChatStore = defineStore('chat', () => {
     getMessages,
     CreateConversation,
     GetConversation,
+    streamChat,
     GetMessagesApi,
-    deleteConversation
+    DeleteConversation
   }
 })
