@@ -25,5 +25,10 @@
     "Logged in successfully!": "Logged in successfully!",
     "Sign up successfully!":"Sign up successfully!",
     "Error": "Error",
-    "Upgrade":"Upgrade"
+    "Upgrade":"Upgrade",
+    "Today": "Today",
+    "Yesterday": "Yesterday",
+    "Last Week": "Last Week",
+    "Last Month": "Last Month",
+    "Older": "Older"
 }
