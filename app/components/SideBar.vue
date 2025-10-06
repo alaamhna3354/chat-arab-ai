@@ -89,10 +89,12 @@ const count = ref(0)
 const toast = useToast()
 
 onMounted(async () => {
-    try {
-        await chat.GetConversation()
-    } finally {
-        loading.value = false
+    if (auth.isAuthenticated) {
+        try {
+            await chat.GetConversation()
+        } finally {
+            loading.value = false
+        }
     }
 })
 
@@ -127,6 +129,9 @@ async function onLogout() {
     const confirmed = await confirmLogout({ count: count.value })
     if (confirmed) {
         auth.logout()
+        chat.AllConversations = []
+        chat.conversations = {}
+        chat.Messages = []
         toast.add({ title: 'Logged out successfully', color: 'success' })
     }
 }

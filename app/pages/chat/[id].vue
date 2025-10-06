@@ -21,11 +21,10 @@
     <!-- زر النزول للأسفل -->
     <UButton v-if="showScrollButton" icon="i-lucide-arrow-down"
       class="absolute bottom-20 right-4 rounded-full shadow-lg" color="neutral" @click="scrollToBottom(true)" />
-
     <!-- الفورم -->
     <form @submit.prevent="sendMessage">
-      <textarea id="textarea" v-model="newMessage" @input="autoResize" @keyup.enter.exact.prevent="sendMessage"
-        :placeholder="$t('Ask anything')" :disabled="isStreaming"></textarea>
+      <textarea id="textarea" v-model="newMessage" @input="autoResize" @keydown="handleKeydown"
+        :placeholder="$t('Ask anything')"></textarea>
 
       <div class="flex justify-between items-center">
         <div>
@@ -41,11 +40,12 @@
             </UTooltip>
           </UDropdownMenu>
         </div>
-        <button v-if="isStreaming" class="stop" @click="stopStreaming">
+        <button v-if="isStreaming" class="stop" type="button" @click="stopStreaming" @mousedown.prevent
+        tabindex="-1">
           <UIcon name="i-lucide-square" class="text-xl" />
         </button>
-        <button v-else class="send" :class="newMessage == '' || isStreaming ? 'empty' : ''" type="submit"
-          :disabled="isStreaming">
+        <button v-else class="send" :class="newMessage == '' || isStreaming ? 'empty' : ''" type="button"
+          @click="sendMessage" @mousedown.prevent>
           <UIcon name="majesticons:arrow-up" class="text-xl" />
         </button>
       </div>
@@ -53,7 +53,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '../../../stores/chat'
@@ -61,16 +61,10 @@ import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
 
-// ----------------------
-// الإعدادات الأساسية
-// ----------------------
 const route = useRoute()
 const conversationId = route.params.id
 const chat = useChatStore()
 
-// ----------------------
-// Markdown مع تظليل الكود و copy button
-// ----------------------
 const md = new MarkdownIt({
   highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {
@@ -92,17 +86,18 @@ const md = new MarkdownIt({
 // ----------------------
 const newMessage = ref('')
 const messages = computed(() => chat.getMessages(conversationId))
-const messagesContainer = ref(null)
+const messagesContainer = ref<HTMLDivElement | null>(null)
 const showScrollButton = ref(false)
 const isStreaming = ref(false)
 const currentStreamText = ref('')
-let currentStream = null
+let currentStream: any = null
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 // ----------------------
 // Auto resize textarea
 // ----------------------
 function autoResize() {
-  const textarea = document.getElementById('textarea')
+  const textarea = textareaRef.value
   if (!textarea) return
   textarea.style.height = 'auto'
   textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
@@ -139,10 +134,15 @@ watch(messages, async () => {
 // إرسال الرسالة
 // ----------------------
 const sendMessage = async () => {
-  if (!newMessage.value.trim() || isStreaming.value) return
+  if (!newMessage.value.trim()) return
 
   const userMessage = newMessage.value
   newMessage.value = ''
+
+  // إبقاء الفوكس بعد الإرسال
+  await nextTick()
+  textareaRef.value?.focus()
+  autoResize()
 
   // أضف رسالة المستخدم
   chat.addMessage(conversationId, {
@@ -164,34 +164,23 @@ const sendMessage = async () => {
   isStreaming.value = true
   currentStreamText.value = ''
 
-  // ----------------------
-  // استدعاء streamChat من store
-  // ----------------------
+  // استدعاء streamChat
   currentStream = chat.streamChat(userMessage, conversationId, 'gemini', {
-    onStart: () => {
-      console.log('🚀 Stream started')
-    },
-
     onChunk: (text) => {
       currentStreamText.value += text
       const msg = chat.getMessages(conversationId).find(
         (m) => m.id === botMessageId
       )
       if (msg) msg.content = currentStreamText.value
-      scrollToBottom()
     },
-
     onComplete: () => {
       isStreaming.value = false
       currentStream = null
-      scrollToBottom()
     },
-
     onError: (error) => {
-      console.error('❌ Stream error:', error)
+      console.error('Stream error:', error)
       isStreaming.value = false
       currentStream = null
-      scrollToBottom()
       chat.addMessage(conversationId, {
         id: Date.now(),
         role: 'system',
@@ -201,57 +190,73 @@ const sendMessage = async () => {
     }
   })
 }
-
 // ----------------------
-// تحميل الرسائل عند الدخول
+// التعامل مع Enter و Shift+Enter
 // ----------------------
-onMounted(async () => {
-  try {
-    await chat.GetMessagesApi(conversationId)
-    await nextTick()
-    requestAnimationFrame(scrollToBottom)
-  } catch (err) {
-    console.error('Failed to load messages:', err)
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    sendMessage()
   }
-
-  // copy buttons
-  document.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('copy-btn')) {
-      const btn = e.target
-      const code = decodeURIComponent(btn.dataset.code)
-      try {
-        await navigator.clipboard.writeText(code)
-        btn.textContent = 'Copied!'
-        btn.disabled = true
-        btn.classList.add('copied')
-        setTimeout(() => {
-          btn.textContent = 'Copy'
-          btn.disabled = false
-          btn.classList.remove('copied')
-        }, 2000)
-      } catch (err) {
-        console.error('Copy failed', err)
-      }
-    }
-  })
-})
-
+}
 // ----------------------
 // تنظيف عند مغادرة الصفحة
 // ----------------------
-const stopStreaming = () => {
-  if (currentStream?.abort) {
-    currentStream.abort()
+onMounted(async () => {
+  await chat.GetMessagesApi(conversationId)
+  await nextTick()
+  scrollToBottom()
+
+  // ----- Copy buttons -----
+  document.addEventListener('click', copyClickHandler)
+})
+
+onUnmounted(() => {
+  stopStreaming()
+  document.removeEventListener('click', copyClickHandler)
+})
+
+// ----- دالة copy -----
+const copyClickHandler = async (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  if (!target.classList.contains('copy-btn')) return
+
+  const btn = target
+  const code = decodeURIComponent(btn.dataset.code || '')
+  try {
+    await navigator.clipboard.writeText(code)
+    btn.textContent = 'Copied!'
+    btn.disabled = true
+    btn.classList.add('copied')
+    setTimeout(() => {
+      btn.textContent = 'Copy'
+      btn.disabled = false
+      btn.classList.remove('copied')
+    }, 2000)
+  } catch (err) {
+    console.error('Copy failed', err)
   }
+}
+
+// ----- Stop streaming -----
+const stopStreaming = (e?: MouseEvent) => {
+  e?.preventDefault() // منع أي submit أو click افتراضي
+  e?.stopPropagation() // منع أي propagation للحدث
+
+  if (currentStream?.abort) currentStream.abort()
 
   isStreaming.value = false
   currentStream = null
-}
-onUnmounted(() => {
-  stopStreaming()
-})
-</script>
 
+  // تأخير صغير لضمان استقرار DOM
+  nextTick(() => {
+    setTimeout(() => {
+      textareaRef.value?.focus()
+    }, 0)
+  })
+}
+
+</script>
 <style>
 .messages {
   max-height: 70vh;
