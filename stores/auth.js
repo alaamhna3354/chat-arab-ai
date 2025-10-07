@@ -21,6 +21,14 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = res.data.user
       accessToken.value = res.data.token   // نتوقع الباك يرجعو
       refreshToken.value = res.data.refreshToken // إذا متوفر
+
+      // مسح بيانات الضيوف عند تسجيل الدخول
+      if (typeof window !== 'undefined') {
+        const { useGuestChatStore } = await import('./guestChat')
+        const guestChat = useGuestChatStore()
+        guestChat.clearGuestData()
+      }
+
       return res
     } catch (err) {
       console.error('Login error:', err)
@@ -39,6 +47,13 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = res.data.user
       accessToken.value = res.data.token
       refreshToken.value = res.data.refreshToken
+
+      // مسح بيانات الضيوف عند تسجيل الدخول
+      if (typeof window !== 'undefined') {
+        const { useGuestChatStore } = await import('./guestChat')
+        const guestChat = useGuestChatStore()
+        guestChat.clearGuestData()
+      }
 
       return res
     } catch (err) {
@@ -101,18 +116,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-   function loginWithGoogleToken(googleIdToken) {
+   async function loginWithGoogleToken(googleIdToken) {
     const config = useRuntimeConfig()
-    return $fetch(`${config.public.apiBase}/auth/google`, {
-      method: 'POST',
-      body: { googleIdToken }
-    }).then((res) => {
+    try {
+      const res = await $fetch(`${config.public.apiBase}/auth/google`, {
+        method: 'POST',
+        body: { googleIdToken }
+      })
+      
       user.value = res.data.user
       accessToken.value = res.data.token
       refreshToken.value = res.data.refreshToken
-      navigateTo('/')
+
+      // مسح بيانات الضيوف عند تسجيل الدخول
+      if (typeof window !== 'undefined') {
+        const { useGuestChatStore } = await import('./guestChat')
+        const guestChat = useGuestChatStore()
+        guestChat.clearGuestData()
+      }
+
+      window.location.href = '/'
       return res
-    })
+    } catch (error) {
+      console.error('Google login error:', error)
+      throw error
+    }
   }
   function updateProfile(payload) {
     const config = useRuntimeConfig()

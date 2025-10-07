@@ -11,12 +11,12 @@ const auth = useAuthStore()
 <template>
   <UModal
     @click="emit('close', false)"
-    :title="`Are you sure you want to log out?`"
+    :title="$t('Are you sure you want to log out?')"
   >
     <template #footer>
       <div class="flex gap-2">
-        <UButton color="neutral" variant="outline" label="Cancel" @click="emit('close', false)" />
-        <UButton color="error" label="Log out" @click="emit('close', true);auth.logout()" />
+        <UButton color="neutral" variant="outline" :label="$t('Cancel')" @click="emit('close', false)" />
+        <UButton color="error" :label="$t('Log out')" @click="emit('close', true);auth.logout()" />
       </div>
     </template>
   </UModal>

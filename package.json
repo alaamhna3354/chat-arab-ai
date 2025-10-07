@@ -10,9 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.17",
+    "@ai-sdk/openai": "^2.0.42",
     "@nuxt/ui": "^4.0.0",
     "@nuxtjs/i18n": "^10.0.6",
     "@pinia/nuxt": "^0.11.2",
+    "ai": "^5.0.60",
+    "dotenv": "^17.2.3",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.0",
     "nuxt": "^4.1.0",
