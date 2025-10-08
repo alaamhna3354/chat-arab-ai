@@ -8,13 +8,13 @@
                 <template #account>
                     <UForm :schema="profileSchema" :state="profileState" @submit="onUpdateProfile"
                         class="flex flex-col gap-4">
-                        <UFormField label="Name" name="name">
+                        <UFormField :label="$t('Name')" name="name">
                             <UInput v-model="profileState.name" class="w-full" />
                         </UFormField>
-                        <UFormField label="Email" name="email">
+                        <UFormField :label="$t('Email')" name="email">
                             <UInput v-model="profileState.email" class="w-full" />
                         </UFormField>
-                        <UButton type="submit" color="neutral" :loading="profileLoading" label="Save Changes"
+                        <UButton type="submit" color="neutral" :loading="profileLoading" :label="$t('Save Changes')"
                             class="mt-4 self-center p-2" />
                     </UForm>
                 </template>
@@ -25,7 +25,7 @@
                         class="flex flex-col gap-4">
 
                         <!-- Current Password -->
-                        <UFormField label="Current Password" name="currentPassword">
+                        <UFormField :label="$t('Current Password')" name="currentPassword">
                             <UInput v-model="passwordState.currentPassword" :type="showCurrent ? 'text' : 'password'"
                                 class="w-full">
                                 <template #trailing>
@@ -38,7 +38,7 @@
                         </UFormField>
 
                         <!-- New Password -->
-                        <UFormField label="New Password" name="newPassword">
+                        <UFormField :label="$t('New Password')" name="newPassword">
                             <UInput v-model="passwordState.newPassword" :type="showNew ? 'text' : 'password'"
                                 class="w-full">
                                 <template #trailing>
@@ -51,7 +51,7 @@
                         </UFormField>
 
                         <!-- Confirm Password -->
-                        <UFormField label="Confirm Password" name="confirmPassword">
+                        <UFormField :label="$t('Confirm Password')" name="confirmPassword">
                             <UInput v-model="passwordState.confirmPassword" :type="showConfirm ? 'text' : 'password'"
                                 class="w-full">
                                 <template #trailing>
@@ -63,7 +63,7 @@
                             </UInput>
                         </UFormField>
 
-                        <UButton type="submit" color="neutral" :loading="PasswordLoading" label="Update Password"
+                        <UButton type="submit" color="neutral" :loading="PasswordLoading" :label="$t('Update Password')"
                             class="mt-4 self-center p-2" loading-icon="i-lucide-loader" />
                     </UForm>
                 </template>
@@ -85,8 +85,8 @@ const toast = useToast()
 const ui = useUiStore()
 const auth = useAuthStore()
 const items = [
-    { label: 'Account', icon: 'i-lucide-user', slot: 'account' },
-    { label: 'Password', icon: 'i-lucide-lock', slot: 'password' }
+    { label: t('Account'), icon: 'i-lucide-user', slot: 'account' },
+    { label: t('Password'), icon: 'i-lucide-lock', slot: 'password' }
 ]
 
 const showCurrent = ref(false)

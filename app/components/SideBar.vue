@@ -73,7 +73,6 @@ import { useAuthStore } from '../../stores/auth'
 import { useChatStore } from '../../stores/chat'
 import { useI18n } from 'vue-i18n'
 import { useToast, useOverlay } from '#imports'
-
 // المودالات
 import SearchChats from './Modals/SearchChats.vue'
 import LogoutModal from './Modals/LogoutModal.vue'
@@ -98,10 +97,8 @@ onMounted(async () => {
     }
 })
 
-
-
 const emit = defineEmits(['toggle-sidebar'])
-const { locale } = useI18n()
+const { t,locale } = useI18n()
 
 // دالة المساعدة
 const overlay = useOverlay()
@@ -157,12 +154,12 @@ const UserDropDown = ref<DropdownMenuItem[][]>([
         }
     ],
     [
-        { label: 'Profile', icon: 'i-lucide-user', onSelect: () => ui.openProfileDrawer() },
-        { label: 'Settings', icon: 'i-lucide-cog' },
+        { label: t('Profile'), icon: 'i-lucide-user', onSelect: () => ui.openProfileDrawer() },
+        { label: t('Settings'), icon: 'i-lucide-cog' },
     ],
     [
         {
-            label: 'Logout',
+            label: t('Log out'),
             icon: 'i-lucide-log-out',
             onSelect: onLogout
         }

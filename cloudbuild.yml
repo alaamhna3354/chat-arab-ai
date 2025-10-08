@@ -37,5 +37,5 @@ steps:
         '--region', 'us-central1',
         '--platform', 'managed',
         '--allow-unauthenticated',
-        '--port', '8080'  # يجب أن يطابق EXPOSE و NITRO_PORT في Dockerfile
+        '--port', '3000'  # يجب أن يطابق EXPOSE و NITRO_PORT في Dockerfile
       ]
