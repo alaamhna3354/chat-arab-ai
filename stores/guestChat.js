@@ -79,6 +79,9 @@ export const useGuestChatStore = defineStore('guestChat', () => {
   
         const response = await fetch(`${config.public.apiBase}/chat/stream`, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             message,
             provider
