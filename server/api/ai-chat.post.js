@@ -3,40 +3,26 @@ import { google } from '@ai-sdk/google'
 import { streamText, generateText } from 'ai'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-
-  // ------------------ تأكد من وجود المفاتيح ------------------
-  if (!config.openaiApiKey) {
-    console.error('❌ OpenAI API key missing in runtimeConfig')
-  } else {
-    process.env.OPENAI_API_KEY = config.openaiApiKey
-  }
-
-  if (!config.googleApiKey) {
-    console.error('❌ Google API key missing in runtimeConfig')
-  } else {
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY = config.googleApiKey
-  }
-
+  const config = useRuntimeConfig(event)
   const body = await readBody(event)
   const { provider, modelName, messages } = body
+  if (!config.public.openaiApiKey) console.error('❌ OpenAI API key missing in runtimeConfig')
+  if (!config.public.googleGenerativeAiApiKey) console.error('❌ Google API key missing in runtimeConfig')
 
   try {
     let model
     let finalMessages = messages
 
     if (provider === 'google') {
-      // ------------------ تنظيف الرسائل ------------------
-      finalMessages = messages.map((m, i) => {
-        // system فقط في بداية المحادثة
-        if (m.role === 'system' && i !== 0) {
-          return { role: 'user', content: m.content }
-        }
-        return m
-      })
+      // ✅ system message يجب أن يكون فقط في البداية
+      finalMessages = messages.map((m, i) =>
+        m.role === 'system' && i !== 0 ? { role: 'user', content: m.content } : m
+      )
 
-      // ------------------ إنشاء موديل Google ------------------
-      model = google(modelName || 'gemini-2.0-flash')
+      // إنشاء موديل Gemini
+      model = google(modelName || 'gemini-2.0-flash', {
+        apiKey: config.public.googleGenerativeAiApiKey
+      })
 
       try {
         const result = await streamText({
@@ -46,12 +32,9 @@ export default defineEventHandler(async (event) => {
         })
 
         let fullResponse = ''
-        for await (const chunk of result.textStream) {
-          fullResponse += chunk
-        }
+        for await (const chunk of result.textStream) fullResponse += chunk
 
         return { success: true, content: fullResponse }
-
       } catch (streamError) {
         console.warn('⚠️ Gemini streamText failed, fallback to generateText:', streamError)
         const prompt = finalMessages.map(m => `${m.role}: ${m.content}`).join('\n')
@@ -63,11 +46,10 @@ export default defineEventHandler(async (event) => {
         })
         return { success: true, content: fallbackResult.text }
       }
-
     } else {
-      // ------------------ إنشاء موديل OpenAI ------------------
+      // OpenAI
       model = openai(modelName || 'gpt-4o-mini', {
-        apiKey: config.openaiApiKey
+        apiKey: config.public.openaiApiKey
       })
 
       const result = await streamText({
@@ -77,13 +59,10 @@ export default defineEventHandler(async (event) => {
       })
 
       let fullResponse = ''
-      for await (const chunk of result.textStream) {
-        fullResponse += chunk
-      }
+      for await (const chunk of result.textStream) fullResponse += chunk
 
       return { success: true, content: fullResponse }
     }
-
   } catch (error) {
     console.error('❌ AI error:', error)
     return { success: false, error: error.message }

@@ -55,7 +55,7 @@ const router = useRouter()
 const input = ref('')
 const isSending = ref(false)
 const textareaRef = ref(null)
-const selectedModel = ref('openai')
+const selectedModel = ref('gemini-flash')
 
 // خيارات الموديلات
 const modelOptions = [[
@@ -63,7 +63,7 @@ const modelOptions = [[
     label: 'OpenAI GPT-4',
     icon: 'logos:openai-icon',
     onSelect: () => {
-      selectedModel.value = 'openai'
+      selectedModel.value = 'gpt-4o-mini'
       console.log('Selected model:', selectedModel.value)
     }
   },
@@ -71,7 +71,7 @@ const modelOptions = [[
     label: 'Google Gemini Flash',
     icon: 'material-icon-theme:gemini-ai',
     onSelect: () => {
-      selectedModel.value = 'google'
+      selectedModel.value = 'gemini-flash'
       console.log('Selected model:', selectedModel.value)
     }
   }

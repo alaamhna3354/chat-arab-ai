@@ -16,7 +16,7 @@
     "@nuxtjs/i18n": "^10.0.6",
     "@pinia/nuxt": "^0.11.2",
     "ai": "^5.0.60",
-    "dotenv": "^17.2.3",
+    "git-filter-repo": "^0.0.30",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.0",
     "nuxt": "^4.1.0",
@@ -27,6 +27,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@types/node": "^24.7.0",
     "sass": "^1.92.1"
   }
 }

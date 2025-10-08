@@ -3,9 +3,8 @@
     <ClientOnly>
       <BodyShine />
     </ClientOnly>
-    
+
     <h1 class="title text-3xl">{{ $t('Try AI Chat - No Registration Required') }}</h1>
-    
     <!-- Guest Notice -->
     <div class="guest-notice">
       <UAlert 

@@ -118,7 +118,7 @@ const messagesContainer = ref<HTMLDivElement | null>(null)
 const showScrollButton = ref(false)
 const isStreaming = ref(false)
 const errorMessage = ref('')
-const selectedModel = ref('openai')
+const selectedModel = ref('gemini-flash')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 // خيارات الموديلات
@@ -127,7 +127,7 @@ const modelOptions = [[
     label: 'OpenAI GPT-4',
     icon: 'logos:openai-icon',
     onSelect: () => {
-      selectedModel.value = 'openai'
+      selectedModel.value = 'gpt-4o-mini'
       console.log('Selected model:', selectedModel.value)
     }
   },
@@ -135,7 +135,7 @@ const modelOptions = [[
     label: 'Google Gemini Flash',
     icon: 'material-icon-theme:gemini-ai',
     onSelect: () => {
-      selectedModel.value = 'google'
+      selectedModel.value = 'gemini-flash'
       console.log('Selected model:', selectedModel.value)
     }
   }
@@ -181,37 +181,66 @@ watch(messages, async () => {
 // ----------------------
 // إرسال الرسالة
 // ----------------------
+const currentStreamText = ref('')
+let currentStream: any = null
 const sendMessage = async () => {
-  if (!newMessage.value.trim() || isStreaming.value) return
+  if (!newMessage.value.trim()) return
 
   const userMessage = newMessage.value
   newMessage.value = ''
-  errorMessage.value = ''
 
   // إبقاء الفوكس بعد الإرسال
   await nextTick()
   textareaRef.value?.focus()
   autoResize()
 
+  // أضف رسالة المستخدم
+  guestChat.addMessage(conversationId, {
+    id: Date.now(),
+    role: 'user',
+    content: userMessage,
+    timestamp: new Date()
+  })
+
+  // أضف رسالة البوت الفارغة (placeholder)
+  const botMessageId = crypto.randomUUID()
+  guestChat.addMessage(conversationId, {
+    id: botMessageId,
+    role: 'assistant',
+    content: ''
+  })
+
   scrollToBottom()
   isStreaming.value = true
+  currentStreamText.value = ''
 
-  try {
-    console.log('Sending message with model:', selectedModel.value)
-    
-    // إرسال الرسالة للـ AI
-    const result = await guestChat.sendMessageToAI(userMessage, conversationId, selectedModel.value)
-    
-    if (!result.success) {
-      errorMessage.value = result.error
+  // استدعاء streamChat
+  currentStream = guestChat.sendMessageToAI(userMessage, conversationId, 'gemini-flash', {
+    onChunk: (text) => {
+      currentStreamText.value += text
+      const msg = guestChat.getMessages(conversationId).find(
+        (m) => m.id === botMessageId
+      )
+      if (msg) msg.content = currentStreamText.value
+    },
+    onComplete: () => {
+      isStreaming.value = false
+      currentStream = null
+    },
+    onError: (error) => {
+      console.error('Stream error:', error)
+      isStreaming.value = false
+      currentStream = null
+      guestChat.addMessage(conversationId, {
+        id: Date.now(),
+        role: 'system',
+        content: `Error: ${error}`,
+        timestamp: new Date()
+      })
     }
-  } catch (error) {
-    console.error('Send message error:', error)
-    errorMessage.value = 'Failed to send message. Please try again.'
-  } finally {
-    isStreaming.value = false
-  }
+  })
 }
+
 
 // ----------------------
 // التعامل مع Enter و Shift+Enter
