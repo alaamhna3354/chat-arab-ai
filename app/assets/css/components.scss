@@ -29,6 +29,16 @@
     background-color: #d6d6d6;
   }
 }
+.btn-gradient{
+  background-image: linear-gradient(to left, #5d6faf, #3ae9fb, #a860c1);
+  background-size: 200% auto;
+  color: #fff;
+  border: 1px solid inherit;
+  transition: background-position 0.5s ease;
+  &:hover {
+    background-position: right center; /* تحريك التدرج */
+  }
+}
 .chat-box {
   display: grid;
 
@@ -101,7 +111,7 @@
       border: none;
       cursor: pointer;
       border-radius: 50%;
-      background-color: #21221f;
+      background-image: linear-gradient(to left, #3ae9fb, #a860c1);
       width: 36px;
       height: 36px;
       display: grid;
@@ -115,7 +125,7 @@
         background-color: transparent;
         cursor: no-drop;
         opacity: 0.4;
-        background-color: #21221f;
+        background-image: linear-gradient(to left, #8e8e8d, #8e8e8d);
       }
     }
 

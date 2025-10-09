@@ -23,7 +23,7 @@
     
     <!-- Sign up prompt -->
     <div class="signup-prompt">
-      <UCard>
+      <UCard variant="subtle">
         <template #header>
           <h3>{{ $t('Want to save your conversations?') }}</h3>
         </template>
@@ -35,7 +35,7 @@
             color="primary" 
             variant="solid" 
             @click="goToSignup"
-            class="btn btn-main">
+            class="btn btn-gradient">
             {{ $t("Sign Up Free") }}
           </UButton>
           <UButton 

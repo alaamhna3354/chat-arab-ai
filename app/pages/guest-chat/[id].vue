@@ -57,9 +57,9 @@
           </UDropdownMenu>
           
           <!-- زر اختيار الموديل -->
-          <UDropdownMenu :items="modelOptions" :ui="{ content: 'w-48' }">
+          <UDropdownMenu :items="guestChat.modelOptions" :ui="{ content: 'w-48' }">
             <UTooltip class="me-1" :delay-duration="0" text="AI Model">
-              <UButton color="neutral" variant="ghost" :icon="selectedModel === 'openai' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
+              <UButton color="neutral" variant="ghost" :icon="guestChat.selectedModel === 'gpt-4o-mini' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
             </UTooltip>
           </UDropdownMenu>
         </div>
@@ -118,28 +118,8 @@ const messagesContainer = ref<HTMLDivElement | null>(null)
 const showScrollButton = ref(false)
 const isStreaming = ref(false)
 const errorMessage = ref('')
-const selectedModel = ref('gemini-flash')
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
-// خيارات الموديلات
-const modelOptions = [[
-  {
-    label: 'OpenAI GPT-4',
-    icon: 'logos:openai-icon',
-    onSelect: () => {
-      selectedModel.value = 'gpt-4o-mini'
-      console.log('Selected model:', selectedModel.value)
-    }
-  },
-  {
-    label: 'Google Gemini Flash',
-    icon: 'material-icon-theme:gemini-ai',
-    onSelect: () => {
-      selectedModel.value = 'gemini-flash'
-      console.log('Selected model:', selectedModel.value)
-    }
-  }
-]]
 
 // ----------------------
 // Auto resize textarea
@@ -215,7 +195,7 @@ const sendMessage = async () => {
   currentStreamText.value = ''
 
   // استدعاء streamChat
-  currentStream = guestChat.sendMessageToAI(userMessage, conversationId, 'gemini-flash', {
+  currentStream = guestChat.sendMessageToAI(userMessage, guestChat.selectedModel, {
     onChunk: (text) => {
       currentStreamText.value += text
       const msg = guestChat.getMessages(conversationId).find(

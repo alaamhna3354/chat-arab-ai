@@ -184,7 +184,9 @@ button {
             li {
                 .router-link-exact-active{
                     button{
-                        background-color: #e6e6e6;
+                        &::before {
+                            opacity: 1;
+                          }
                     }
                 }   
                 button {
@@ -212,11 +214,20 @@ button {
             margin-bottom: 2px;
             border-radius: 5px;
             cursor: pointer;
-
-            &:hover {
-                background-color: #eeecec;
+            position: relative;
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image: linear-gradient(to left, #5d6faf5b, #3ae8fb7c, #a960c133);
+                opacity: 0; 
+                transition: opacity 0.5s ease;
+                z-index: 0;
+                border-radius: 5px;
             }
-
+              &:hover::before {
+                opacity: 1;
+              }
         }
 
         .hide-close {

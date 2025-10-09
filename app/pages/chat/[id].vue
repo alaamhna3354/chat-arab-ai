@@ -38,9 +38,9 @@
               <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" disabled />
             </UTooltip>
           </UDropdownMenu>
-          <UDropdownMenu :items="modelOptions" :ui="{ content: 'w-48' }">
+          <UDropdownMenu :items="chat.modelOptions" :ui="{ content: 'w-48' }">
             <UTooltip class="me-1" :delay-duration="0" text="AI Model">
-              <UButton color="neutral" variant="ghost" :icon="selectedModel === 'openai' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
+              <UButton color="neutral" variant="ghost" :icon="chat.selectedModel === 'gpt-4o-mini' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
             </UTooltip>
           </UDropdownMenu>
         </div>
@@ -134,28 +134,6 @@ watch(messages, async () => {
   scrollToBottom()
 })
 // ----------------------
-// اختيار مودل
-// ----------------------
-const selectedModel = ref('gemini-flash')
-const modelOptions = [[
-  {
-    label: 'OpenAI GPT-4',
-    icon: 'logos:openai-icon',
-    onSelect: () => {
-      selectedModel.value = 'gpt-4o-mini'
-      console.log('Selected model:', selectedModel.value)
-    }
-  },
-  {
-    label: 'Google Gemini Flash',
-    icon: 'material-icon-theme:gemini-ai',
-    onSelect: () => {
-      selectedModel.value = 'gemini-flash'
-      console.log('Selected model:', selectedModel.value)
-    }
-  }
-]]
-// ----------------------
 // إرسال الرسالة
 // ----------------------
 const sendMessage = async () => {
@@ -190,7 +168,7 @@ const sendMessage = async () => {
   currentStreamText.value = ''
 
   // استدعاء streamChat
-  currentStream = chat.streamChat(userMessage, conversationId, 'gemini', {
+  currentStream = chat.streamChat(userMessage, conversationId, chat.selectedModel, {
     onChunk: (text) => {
       currentStreamText.value += text
       const msg = chat.getMessages(conversationId).find(

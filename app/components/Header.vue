@@ -2,16 +2,16 @@
     <header>
         <UIcon @click="emit('toggle-sidebar')" name="heroicons:bars-3-center-left-16-solid" :class="locale"
             class="open-side-bar size-6 text-[#999] cursor-pointer" />
-        <NuxtLink :to="auth.isAuthenticated ? '/':'/guest'" class="logo">
-            <img width="50" height="50" src="../assets/img/logo-black.png" alt="">
+        <NuxtLink :to="auth.isAuthenticated ? '/' : '/guest'" class="logo">
+            <img width="50" height="50" src="../assets/img/logo-blue.png" alt="">
         </NuxtLink>
         <ClientOnly>
-            <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main signup-link" to="/signup">{{ $t('Sign up')
+            <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-gradient signup-link" to="/signup">{{ $t('Sign up')
                 }}</NuxtLink>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/login">{{ $t('Log in') }}</NuxtLink>
             <NuxtLink v-if="auth.isAuthenticated" to="/pricing-plans">
-                <UButton class="btn btn-secondary" icon="i-lucide-rocket" color="neutral" variant="ghost" :ui="{
-                    leadingIcon: 'text-info'
+                <UButton class="btn btn-gradient" icon="i-lucide-rocket" color="neutral" variant="ghost" :ui="{
+                    leadingIcon: 'text-white'
                 }">
                     {{ $t('Upgrade') }}
                 </UButton>
@@ -54,6 +54,7 @@ header {
     display: flex;
     align-items: center;
     gap: 1rem;
+
     .open-side-bar {
         @media (min-width:768px) {
             display: none;

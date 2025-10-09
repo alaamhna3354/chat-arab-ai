@@ -3,7 +3,8 @@
     <div v-if="isSending"
       class="fixed inset-0 z-50 backdrop-blur-sm bg-elevated/75 flex items-center justify-center">
       <div class="flex flex-col items-center gap-3 text-white">
-        <UIcon name="svg-spinners:pulse-multiple" class="size-10 text-[#21221f]" />
+        <UIcon name="svg-spinners:pulse-multiple"
+                    class="size-15 text-gradient bg-gradient-to-r from-[#5d6faf] from-10% via-[#3ae8fb] via-40% to-[#a960c1] to-90%" />
       </div>
     </div>
     <form @submit.prevent="createNewGuestChat">
@@ -26,10 +27,10 @@
           </UDropdownMenu>
 
           <!-- زر اختيار الموديل -->
-          <UDropdownMenu :items="modelOptions" :ui="{ content: 'w-48' }">
+          <UDropdownMenu :items="guestChat.modelOptions" :ui="{ content: 'w-48' }">
             <UTooltip class="me-1" :delay-duration="0" text="AI Model">
               <UButton color="neutral" variant="ghost"
-                :icon="selectedModel === 'openai' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
+                :icon="guestChat.selectedModel === 'gpt-4o-mini' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
             </UTooltip>
           </UDropdownMenu>
         </div>
@@ -52,27 +53,6 @@ const router = useRouter()
 const input = ref('')
 const isSending = ref(false)
 const textareaRef = ref(null)
-const selectedModel = ref('gemini-flash')
-
-// خيارات الموديلات
-const modelOptions = [[
-  {
-    label: 'OpenAI GPT-4',
-    icon: 'logos:openai-icon',
-    onSelect: () => {
-      selectedModel.value = 'gpt-4o-mini'
-      console.log('Selected model:', selectedModel.value)
-    }
-  },
-  {
-    label: 'Google Gemini Flash',
-    icon: 'material-icon-theme:gemini-ai',
-    onSelect: () => {
-      selectedModel.value = 'gemini-flash'
-      console.log('Selected model:', selectedModel.value)
-    }
-  }
-]]
 
 function autoResize() {
   const textarea = textareaRef.value
@@ -89,7 +69,7 @@ const createNewGuestChat = async () => {
     const conversationId = guestChat.createGuestConversation()
     guestChat.addMessage(conversationId, { role: 'user', content: input.value })
 
-    guestChat.sendMessageToAI(input.value, selectedModel.value, {
+    guestChat.sendMessageToAI(input.value, guestChat.selectedModel, {
       onStart: () => {
         console.log('🚀 Guest streaming started')
       },

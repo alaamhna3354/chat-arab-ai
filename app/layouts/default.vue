@@ -1,5 +1,6 @@
 <template>
-    <div class="main" :class="isSidebarOpen ? 'open' : ''">
+
+    <div v-if="Loaded" class="main" :class="isSidebarOpen ? 'open' : ''">
         <!-- Sidebar -->
         <SideBar :class="isSidebarOpen ? 'open' : ''" @toggle-sidebar="toggleSidebar" />
 
@@ -10,10 +11,19 @@
             <slot />
         </main>
     </div>
+    <transition name="fade">
+        <div v-if="!Loaded"
+            class="fixed z-1000 inset-0 backdrop-blur-sm bg-elevated/75 flex items-center justify-center">
+            <div class="flex flex-col items-center gap-3 text-white">
+                <UIcon name="svg-spinners:pulse-multiple"
+                    class="size-30 text-gradient bg-gradient-to-r from-[#5d6faf] from-10% via-[#3ae8fb] via-40% to-[#a960c1] to-90%" />
+            </div>
+        </div>
+    </transition>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCookie } from '#app'
 import Profile from '../components/Modals/Profile.vue'
@@ -22,6 +32,10 @@ import Header from '../components/Header.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useI18n } from 'vue-i18n'
 
+const Loaded = ref(false)
+onMounted(async () => {
+    Loaded.value = true;
+})
 /* -------------------------
    إعدادات أساسية
 ------------------------- */
@@ -33,15 +47,15 @@ const { width } = useWindowSize()
 
 const isSidebarOpen = ref(false)
 const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value
+    isSidebarOpen.value = !isSidebarOpen.value
 }
 
 const route = useRoute()
 
 watch(route, () => {
-  if (width.value <= 768) {
-    isSidebarOpen.value = false
-  }
+    if (width.value <= 768) {
+        isSidebarOpen.value = false
+    }
 })
 /* -------------------------
    i18n

@@ -5,7 +5,23 @@ export const useGuestChatStore = defineStore('guestChat', () => {
   const conversations = ref({})      // المحادثات المحلية للضيوف
   const currentConversationId = ref(null)  // المحادثة الحالية
   const Messages = ref([])           // الرسائل الحالية
-
+  const selectedModel = ref('gpt-4o-mini')           // الرسائل الحالية
+  const modelOptions = [[
+    {
+      label: 'OpenAI chatgpt',
+      icon: 'logos:openai-icon',
+      onSelect: () => {
+        selectedModel.value = 'gpt-4o-mini'
+      }
+    },
+    {
+      label: 'Google Gemini Flash',
+      icon: 'material-icon-theme:gemini-ai',
+      onSelect: () => {
+        selectedModel.value = 'gemini-flash'
+      }
+    }
+  ]]
   // ------------------------
   // إنشاء محادثة جديدة للضيف
   function createGuestConversation() {
@@ -65,7 +81,7 @@ export const useGuestChatStore = defineStore('guestChat', () => {
     }
   }
   // ------------------------
-  async function sendMessageToAI(message, provider = 'gemini-flash',callbacks) {
+  async function sendMessageToAI(message, provider,callbacks) {
     const { onChunk, onComplete, onError, onStart } = callbacks
     const config = useRuntimeConfig()
     const abortController = new AbortController()
@@ -153,7 +169,9 @@ export const useGuestChatStore = defineStore('guestChat', () => {
     getAllConversations,
     deleteConversation,
     sendMessageToAI,
-    clearGuestData
+    clearGuestData,
+    selectedModel,
+    modelOptions
   }
 }, {
   persist: {

@@ -6,7 +6,7 @@
       <div class="head">
         <div class="logo">
           <NuxtLink to="/guest">
-            <img width="30" height="30" src="../../assets/img/logo-black.png" alt=""></img>
+            <img width="30" height="30" src="../../assets/img/logo-blue.png" alt=""></img>
           </NuxtLink>
           <UIcon @click="emit('toggle-sidebar')" name="streamline-plump:book-1-solid" :class="locale"
             class="rotate hover-open-sidebar size-5 text-[#999]" />
@@ -17,7 +17,7 @@
         </button>
       </div>
       <button class="chats-but" @click="createNewChat">
-        <UIcon name="cuida:edit-outline" class=" size-4 text-[#21221f]" />
+        <UIcon name="streamline-plump-color:ai-edit-robot-flat" class="size-5" />
         <span class="hide-close ms-2">
           {{ $t('New chat') }}
         </span>
