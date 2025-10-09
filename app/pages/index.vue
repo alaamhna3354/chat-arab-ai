@@ -1,5 +1,5 @@
 <template>
-  <div v-if="Loaded">
+
     <div v-if="auth.isAuthenticated">
       <ClientOnly>
         <BodyShine />
@@ -38,24 +38,11 @@
         </div>
       </UCard>
     </div>
-  </div>
-  <transition name="fade">
-    <div v-if="!Loaded" class="fixed z-1000 inset-0 backdrop-blur-sm bg-elevated/75 flex items-center justify-center">
-    <div class="flex flex-col items-center gap-3 text-white">
-      <UIcon name="svg-spinners:pulse-multiple" class="size-10 text-[#21221f]" />
-    </div>
-  </div>
-  </transition>
-  
 </template>
 <script setup>
 import { useAuthStore } from '../../stores/auth'
-import { ref, onMounted } from 'vue'
 const auth = useAuthStore()
-const Loaded = ref(false)
-onMounted(async () => {
-  Loaded.value = true;
-})
+
 definePageMeta({
   middleware: []
 })

@@ -5,7 +5,7 @@
             <div class="head">
                 <div class="logo">
                     <NuxtLink to="/">
-                        <img width="30" height="30" src="../assets/img/logo-black.png" alt=""></img>
+                        <img width="30" height="30" src="../assets/img/logo-blue.png" alt=""></img>
                     </NuxtLink>
                     <UIcon @click="emit('toggle-sidebar')" name="streamline-plump:book-1-solid" :class="locale"
                         class="rotate hover-open-sidebar size-5 text-[#999]" />
@@ -17,7 +17,7 @@
             </div>
             <NuxtLink to="/">
                 <button class="chats-but">
-                    <UIcon name="cuida:edit-outline" class=" size-4 text-[#21221f]" />
+                    <UIcon name="streamline-plump-color:ai-edit-robot-flat" class="size-5" />
                     <span class="hide-close ms-2">
                         {{ $t('New chat') }}
                     </span>
@@ -25,7 +25,7 @@
             </NuxtLink>
             <!-- Search Chat -->
             <button class="chats-but" @click="onSearch">
-                <UIcon name="lucide:search" class="size-4 text-[#21221f]" />
+                <UIcon name="flat-color-icons:search" class="size-5" />
                 <span class="ms-2 hide-close">{{ $t('Search chats') }}</span>
             </button>
         </div>

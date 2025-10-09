@@ -3,7 +3,8 @@
     <div v-if="isSending"
       class="fixed inset-0 z-50 backdrop-blur-sm bg-elevated/75 flex items-center justify-center">
       <div class="flex flex-col items-center gap-3 text-white">
-        <UIcon name="svg-spinners:pulse-multiple" class="size-10 text-[#21221f]" />
+        <UIcon name="svg-spinners:pulse-multiple"
+        class="size-15 text-gradient bg-gradient-to-r from-[#5d6faf] from-10% via-[#3ae8fb] via-40% to-[#a960c1] to-90%" />
       </div>
     </div>
     <form @submit.prevent="createNewChat">
@@ -21,10 +22,10 @@
               <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" disabled />
             </UTooltip>
           </UDropdownMenu>
-          <UDropdownMenu :items="modelOptions" :ui="{ content: 'w-48' }">
+          <UDropdownMenu :items="chat.modelOptions" :ui="{ content: 'w-48' }">
             <UTooltip class="me-1" :delay-duration="0" text="AI Model">
               <UButton color="neutral" variant="ghost"
-                :icon="selectedModel === 'openai' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
+                :icon="chat.selectedModel === 'gpt-4o-mini' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
             </UTooltip>
           </UDropdownMenu>
         </div>
@@ -53,31 +54,13 @@ function autoResize() {
   textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
 }
 
-const selectedModel = ref('gemini-flash')
-const modelOptions = [[
-  {
-    label: 'OpenAI GPT-4',
-    icon: 'logos:openai-icon',
-    onSelect: () => {
-      selectedModel.value = 'gpt-4o-mini'
-      console.log('Selected model:', selectedModel.value)
-    }
-  },
-  {
-    label: 'Google Gemini Flash',
-    icon: 'material-icon-theme:gemini-ai',
-    onSelect: () => {
-      selectedModel.value = 'gemini-flash'
-      console.log('Selected model:', selectedModel.value)
-    }
-  }
-]]
+
 const createNewChat = async () => {
   if (!input.value || isSending.value) return
   isSending.value = true
 
   try {
-    const newConv = await chat.CreateConversation(input.value, 'gemini')
+    const newConv = await chat.CreateConversation(input.value, chat.selectedModel)
     if (newConv?.conversation_id) {
       router.push(`/chat/${newConv.conversation_id}`)
     }
