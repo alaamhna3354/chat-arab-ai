@@ -82,7 +82,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
   try {
     await auth.signup({ name: state.name, email: state.email, password: state.password })
-    toast.add({ title: t('Success'), description: t('Sign up successfully!'), color: 'success' })
+    toast.add({ title: t('Success'), description: t('Sign up successfully!'), color: 'neutral' })
     navigateTo('/')
   } catch (err: any) {
     toast.add({ title: t('Error'), description: err.response._data.message, color: 'error' })

@@ -1,6 +1,12 @@
 <template>
   <div class="chat-box">
-    <form @submit.prevent="createNewChat" >
+    <div v-if="isSending"
+      class="fixed inset-0 z-50 backdrop-blur-sm bg-elevated/75 flex items-center justify-center">
+      <div class="flex flex-col items-center gap-3 text-white">
+        <UIcon name="svg-spinners:pulse-multiple" class="size-10 text-[#21221f]" />
+      </div>
+    </div>
+    <form @submit.prevent="createNewChat">
       <textarea id="textarea" v-model="input" @input="autoResize" @keyup.enter.exact.prevent="createNewChat"
         :placeholder="$t('Ask anything')" :disabled="isSending"></textarea>
       <div class="flex justify-between items-center">
@@ -8,19 +14,17 @@
           <UDropdownMenu :items="[[{
             label: 'Upload Files',
             icon: 'akar-icons:attach',
-            onSelect: () => onDeleteConversation(conv.id)
+            disabled: true,
+            onSelect: () => { } // معطل حالياً للضيوف
           }]]" :ui="{ content: 'w-48' }">
-            <UTooltip class="me-1" :delay-duration="0" text="Add Files">
-              <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" />
+            <UTooltip class="me-1" :delay-duration="0" text="Add Files (Coming Soon)">
+              <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" disabled />
             </UTooltip>
           </UDropdownMenu>
-          <UDropdownMenu :items="[[{
-            label: 'Upload Files',
-            icon: 'akar-icons:attach',
-            onSelect: () => onDeleteConversation(conv.id)
-          }]]" :ui="{ content: 'w-48' }">
-            <UTooltip class="me-1" :delay-duration="0" text="Models">
-              <UButton color="neutral" variant="ghost" icon="material-symbols:page-info-rounded" />
+          <UDropdownMenu :items="modelOptions" :ui="{ content: 'w-48' }">
+            <UTooltip class="me-1" :delay-duration="0" text="AI Model">
+              <UButton color="neutral" variant="ghost"
+                :icon="selectedModel === 'openai' ? 'logos:openai-icon' : 'material-icon-theme:gemini-ai'" />
             </UTooltip>
           </UDropdownMenu>
         </div>
@@ -49,12 +53,31 @@ function autoResize() {
   textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
 }
 
+const selectedModel = ref('gemini-flash')
+const modelOptions = [[
+  {
+    label: 'OpenAI GPT-4',
+    icon: 'logos:openai-icon',
+    onSelect: () => {
+      selectedModel.value = 'gpt-4o-mini'
+      console.log('Selected model:', selectedModel.value)
+    }
+  },
+  {
+    label: 'Google Gemini Flash',
+    icon: 'material-icon-theme:gemini-ai',
+    onSelect: () => {
+      selectedModel.value = 'gemini-flash'
+      console.log('Selected model:', selectedModel.value)
+    }
+  }
+]]
 const createNewChat = async () => {
   if (!input.value || isSending.value) return
   isSending.value = true
 
   try {
-    const newConv = await chat.CreateConversation(input.value)
+    const newConv = await chat.CreateConversation(input.value, 'gemini')
     if (newConv?.conversation_id) {
       router.push(`/chat/${newConv.conversation_id}`)
     }
@@ -62,7 +85,8 @@ const createNewChat = async () => {
   } catch (err) {
     console.error('Failed to create conversation:', err)
   } finally {
-    isSending.value = false // رجّع الحالة بعد ما يخلص
+    isSending.value = false
   }
 }
+
 </script>

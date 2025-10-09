@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-// import { useCookie } from '#app'
+import { useCookie } from '#app'
 import { useI18n } from 'vue-i18n'
 import GuestSideBar from '../components/Guest/GuestSideBar.vue'
 import Header from '../components/Header.vue'
@@ -45,12 +45,21 @@ watch(route, () => {
 const i18n = useI18n()
 
 // حفظ اللغة في localStorage
-if (typeof window !== 'undefined') {
-  const savedLang = localStorage.getItem('i18n_redirected')
-  if (savedLang && (savedLang === 'en' || savedLang === 'ar')) {
-      i18n.locale.value = savedLang
-  }
+const savedLang = useCookie('i18n_redirected').value
+if (savedLang && (savedLang === 'en' || savedLang === 'ar')) {
+    i18n.locale.value = savedLang
 }
+// تحديث اللغة عند تغيير الراوت
+watch(
+    () => route.path,
+    () => {
+        const lang = useCookie('i18n_redirected').value
+        if (lang && (lang === 'en' || lang === 'ar')) {
+            i18n.locale.value = lang
+        }
+    },
+    { immediate: true }
+)
 </script>
 
 <style scoped>

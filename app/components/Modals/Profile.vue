@@ -158,7 +158,7 @@ const onUpdateProfile = async (event: FormSubmitEvent<ProfileSchema>) => {
         toast.add({
             title: t('Success'),
             description: t('Profile updated successfully'),
-            color: 'success'
+            color: 'neutral'
         })
         profileLoading.value = false;
         
@@ -200,7 +200,7 @@ const onChangePassword = async (event: FormSubmitEvent<PasswordSchema>) => {
         toast.add({
             title: t('Success'),
             description: t('Password changed successfully'),
-            color: 'success'
+            color: 'neutral'
         })
         PasswordLoading.value = false;
 

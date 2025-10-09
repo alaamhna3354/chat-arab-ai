@@ -79,9 +79,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 
-// definePageMeta({
-//   layout: 'guest'
-// })
+definePageMeta({
+  layout: 'guest'
+})
 import { useRoute } from 'vue-router'
 import { useGuestChatStore } from '../../../stores/guestChat'
 import MarkdownIt from 'markdown-it'

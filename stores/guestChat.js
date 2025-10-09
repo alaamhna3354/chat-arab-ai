@@ -1,8 +1,6 @@
 // stores/guestChat.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-
 export const useGuestChatStore = defineStore('guestChat', () => {
   const conversations = ref({})      // المحادثات المحلية للضيوف
   const currentConversationId = ref(null)  // المحادثة الحالية
@@ -63,11 +61,11 @@ export const useGuestChatStore = defineStore('guestChat', () => {
     if (currentConversationId.value === conversationId) {
       currentConversationId.value = null
       Messages.value = []
+      
     }
   }
-
   // ------------------------
-  async function sendMessageToAI(message, conversationId, provider = 'gemini-flash',callbacks) {
+  async function sendMessageToAI(message, provider = 'gemini-flash',callbacks) {
     const { onChunk, onComplete, onError, onStart } = callbacks
     const config = useRuntimeConfig()
     const abortController = new AbortController()
