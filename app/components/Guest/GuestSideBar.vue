@@ -6,7 +6,7 @@
       <div class="head">
         <div class="logo">
           <NuxtLink to="/guest">
-            <img width="30" height="30" src="../../assets/img/logo-icon.png" alt=""></img>
+            <img width="30" height="30" src="../../assets/img/logo-black.png" alt=""></img>
           </NuxtLink>
           <UIcon @click="emit('toggle-sidebar')" name="streamline-plump:book-1-solid" :class="locale"
             class="rotate hover-open-sidebar size-5 text-[#999]" />
@@ -24,8 +24,6 @@
       </button>
     </div>
 
-    <!-- New Chat -->
-
     <!-- Chat History -->
     <div class="hide-close mt-5" v-if="guestChat.getAllConversations().length > 0">
       <div style="color: #8f8f8f;font-weight: 500;">{{ $t("Recent Chats") }}</div>
@@ -38,7 +36,7 @@
                 label: 'Delete',
                 color: 'error',
                 icon: 'i-lucide-trash',
-                onSelect: () => onDeleteConversation(conv.id)
+                onSelect: () => onDeleteConversation(conv.id,conv.title)
               }]]" :ui="{ content: 'w-48' }">
                 <UButton color="neutral" variant="ghost" icon="pepicons-pencil:dots-x" />
               </UDropdownMenu>
@@ -51,9 +49,11 @@
   </aside>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
 import { useGuestChatStore } from '../../../stores/guestChat'
 import { useI18n } from 'vue-i18n'
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
 // import { useToast } from '#imports'
 
 // المودالات - مؤقتاً معطلة للضيوف
@@ -83,18 +83,21 @@ function useModalConfirm(component: any) {
     }
 }
 const confirmDelete = useModalConfirm(DeleteConversation)
-async function onDeleteConversation(convId: string) {
-  const confirmed = await confirmDelete()
+async function onDeleteConversation(convId: string,convTitle:string) {
+
+  const confirmed = await confirmDelete({convTitle})
     if (confirmed) {
         guestChat.deleteConversation(convId)
-        toast.add({ title: 'Conversation deleted', color: 'success' })
+        toast.add({ title: 'Conversation deleted', color: 'neutral',duration:2000 })
+        if (route.params.id == convId) {
+          router.push('/guest')
+        }
     }
 }
 
 function createNewChat() {
   // إنشاء محادثة جديدة والانتقال للصفحة الرئيسية
   guestChat.createGuestConversation()
-  window.location.href = '/guest'
 }
 // Props
 defineProps({

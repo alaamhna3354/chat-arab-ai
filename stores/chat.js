@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useAuthStore } from './auth'
+import { useRouter, useRoute } from 'vue-router'
 
 export const useChatStore = defineStore('chat', () => {
   const auth = useAuthStore()
@@ -22,43 +23,54 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   // Create Conversation
-  async function CreateConversation(message = '') {
-    const config = useRuntimeConfig()
-    try {
-      const data = await $fetch(`${config.public.apiBase}/chat/gemini/chat`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${auth.accessToken}`,
-          'Content-Type': 'application/json'
+  async function CreateConversation(message, provider) {
+    const conversationId = ref(null)
+  
+    return new Promise((resolve, reject) => {
+      const { abort, done } = streamChat(message, null, provider, {
+        onStart: () => {
+          console.log('🚀 Starting streaming for new conversation...')
         },
-        body: { message }
+        onChunk: (text) => {
+          // أول chunk ممكن يحتوي على conversation_id
+          // أو نستعمل حدث onComplete لاحقًا لو الباك يرجع id هناك
+          if (!conversationId.value) {
+            // يمكنك التقاطه من data.type === 'chunk' الأولى أو من onComplete
+          }
+  
+          // أضف النص تدريجيًا للمحادثة المؤقتة
+          if (conversationId.value) {
+            if (!conversations.value[conversationId.value]) {
+              conversations.value[conversationId.value] = []
+            }
+            const msgs = conversations.value[conversationId.value]
+            if (!msgs.length || msgs[msgs.length - 1].role !== 'assistant') {
+              msgs.push({ role: 'assistant', content: text })
+            } else {
+              msgs[msgs.length - 1].content += text
+            }
+          }
+        },
+        onComplete: (convId) => {
+          GetConversation()
+          conversationId.value = convId
+          
+          if (!AllConversations.value[convId]) {
+            AllConversations.value[convId] = {
+              id: convId,
+              title: message.slice(0, 20) || 'New Chat',
+            }
+          }
+          resolve({ conversation_id: convId })
+        },
+        onError: (err) => {
+          console.error('❌ Streaming error:', err)
+          reject(err)
+        },
       })
-
-      if (data?.conversation_id || data?.id) {
-        const convId = data.conversation_id || data.id
-
-        // أنشئ مصفوفة رسائل فاضية لهاي المحادثة
-        conversations.value[convId] = []
-
-        // ضيف المحادثة الجديدة على الهيستوري
-        AllConversations.value[convId] = {
-          id: convId,
-          title: data.title || message.slice(0, 20) || 'New Chat',
-          ...data
-        }
-
-        // إذا البيانات ناقصة (مثلاً ما رجع title) → رجّع كل المحادثات من السيرفر
-        if (!data.title) {
-          await GetConversation()
-        }
-      }
-
-      return data
-    } catch (err) {
-      console.error('Create Conversation failed:', err)
-      throw err
-    }
+    })
   }
+  
 
 
   // ------------------------
@@ -183,6 +195,8 @@ export const useChatStore = defineStore('chat', () => {
   // Delete Conversation Id
   async function DeleteConversation(conversationId) {
     const config = useRuntimeConfig()
+    const router = useRouter()
+    const route = useRoute() 
     try {
       const data = await $fetch(`${config.public.apiBase}/chat/conversations/${conversationId}`, {
         method: 'DELETE',
@@ -191,32 +205,32 @@ export const useChatStore = defineStore('chat', () => {
           'Content-Type': 'application/json'
         },
       })
-
+  
       if (data) {
-        // if user in same conversationId route 
-        if (Messages.value?.length && Messages.value[0]?.conversationId === conversationId) {
-          Messages.value = []
-          navigateTo('/')
-        }
-
-        // Delete Conversation from AllConversations
+        // حذف الرسائل من الستور
+        delete conversations.value[conversationId]
+  
+        // حذف المحادثة من القائمة الجانبية
         if (Array.isArray(AllConversations.value)) {
           AllConversations.value = AllConversations.value.filter(conv => conv.id !== conversationId)
         } else {
           delete AllConversations.value[conversationId]
         }
-
-        // Delete Messages from AllConversations
-        delete conversations.value[conversationId]
+  
+        // 🧠 فقط إذا المستخدم داخل نفس صفحة المحادثة، رجّعه للرئيسية
+        if (route.params.id == conversationId) {
+          Messages.value = []
+          router.push('/')
+        }
       }
-
+  
       return data
     } catch (err) {
       console.error('Delete Conversation failed:', err)
       throw err
     }
   }
-
+  
 
 
   return {

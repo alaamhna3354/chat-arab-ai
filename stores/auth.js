@@ -6,7 +6,6 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const accessToken = ref(null)
   const refreshToken = ref(null)
-
   const isAuthenticated = computed(() => !!accessToken.value)
 
   // login

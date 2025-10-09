@@ -5,7 +5,7 @@
             <div class="head">
                 <div class="logo">
                     <NuxtLink to="/">
-                        <img width="30" height="30" src="../assets/img/logo-icon.png" alt=""></img>
+                        <img width="30" height="30" src="../assets/img/logo-black.png" alt=""></img>
                     </NuxtLink>
                     <UIcon @click="emit('toggle-sidebar')" name="streamline-plump:book-1-solid" :class="locale"
                         class="rotate hover-open-sidebar size-5 text-[#999]" />
@@ -44,7 +44,7 @@
                                 label: 'Delete',
                                 color: 'error',
                                 icon: 'i-lucide-trash',
-                                onSelect: () => onDeleteConversation(conv.id)
+                                onSelect: () => onDeleteConversation(conv.id,conv.title)
                             }]]" :ui="{ content: 'w-48' }">
                                 <UButton color="neutral" variant="ghost" icon="pepicons-pencil:dots-x" />
                             </UDropdownMenu>
@@ -77,7 +77,6 @@ import { useToast, useOverlay } from '#imports'
 import SearchChats from './Modals/SearchChats.vue'
 import LogoutModal from './Modals/LogoutModal.vue'
 import DeleteConversation from './Modals/DeleteConversation.vue'
-
 // stores
 const auth = useAuthStore()
 const chat = useChatStore()
@@ -129,15 +128,15 @@ async function onLogout() {
         chat.AllConversations = []
         chat.conversations = {}
         chat.Messages = []
-        toast.add({ title: 'Logged out successfully', color: 'success' })
+        toast.add({ title: 'Logged out successfully', color: 'neutral' })
     }
 }
 
-async function onDeleteConversation(convId: number) {
-    const confirmed = await confirmDelete()
+async function onDeleteConversation(convId: number,convTitle:string) {
+    const confirmed = await confirmDelete({convTitle})
     if (confirmed) {
         await chat.DeleteConversation(convId)
-        toast.add({ title: 'Conversation deleted', color: 'success' })
+        toast.add({ title: 'Conversation deleted', color: 'neutral',duration:2000 })
     }
 }
 

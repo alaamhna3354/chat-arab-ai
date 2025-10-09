@@ -80,7 +80,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
   try {
     await auth.login({ email: state.email, password: state.password })
-    toast.add({ title: t('Success'), description: t('Logged in successfully!'), color: 'success' })
+    toast.add({ title: t('Success'), description: t('Logged in successfully!'), color: 'neutral' })
     await navigateTo('/')
   } catch (err: any) {
     toast.add({ title: t('Error'), description: err.response._data.message, color: 'error' })

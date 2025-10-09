@@ -3,7 +3,7 @@
         <UIcon @click="emit('toggle-sidebar')" name="heroicons:bars-3-center-left-16-solid" :class="locale"
             class="open-side-bar size-6 text-[#999] cursor-pointer" />
         <NuxtLink :to="auth.isAuthenticated ? '/':'/guest'" class="logo">
-            <img width="100" height="100" src="../assets/img/logo.png" alt="">
+            <img width="50" height="50" src="../assets/img/logo-black.png" alt="">
         </NuxtLink>
         <ClientOnly>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main signup-link" to="/signup">{{ $t('Sign up')
