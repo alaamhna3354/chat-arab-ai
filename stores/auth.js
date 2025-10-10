@@ -1,7 +1,9 @@
 // stores/auth.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useModelsStore } from './models'
 export const useAuthStore = defineStore('auth', () => {
+  const modelsStore  = useModelsStore()
   
   const user = ref(null)
   const accessToken = ref(null)
@@ -21,6 +23,10 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = res.data.token   // نتوقع الباك يرجعو
       refreshToken.value = res.data.refreshToken // إذا متوفر
 
+      if (res.data.availableModels && Array.isArray(res.data.availableModels)) {
+        modelsStore.setAvailableModels(res.data.availableModels)
+        console.log('modelOptions',modelsStore.modelOptions)
+      }
       // مسح بيانات الضيوف عند تسجيل الدخول
       if (typeof window !== 'undefined') {
         const { useGuestChatStore } = await import('./guestChat')
@@ -111,6 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       accessToken.value = null
       refreshToken.value = null
+      localStorage.removeItem('models')
       navigateTo('/')
     }
   }
