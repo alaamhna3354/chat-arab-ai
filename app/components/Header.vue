@@ -2,12 +2,22 @@
     <header>
         <UIcon @click="emit('toggle-sidebar')" name="heroicons:bars-3-center-left-16-solid" :class="locale"
             class="open-side-bar size-6 text-[#999] cursor-pointer" />
-        <NuxtLink :to="auth.isAuthenticated ? '/' : '/guest'" class="logo">
-            <img width="50" height="50" src="../assets/img/logo-blue.png" alt="">
-        </NuxtLink>
+        <div class="me-auto flex items-center">
+            <ClientOnly>
+                <UDropdownMenu :items="Models.modelOptions" :ui="{ content: 'w-50' }">
+                    <UButton color="neutral" variant="ghost" class="ps-0"
+                        :icon="Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai' : 'logos:openai-icon'">
+                        <span>{{ Models.selectedModel.includes('gemini') ? "Gemini" : "ChatGpt" }}</span>
+                    </UButton>
+                </UDropdownMenu>
+                <!-- <UIcon :name=" Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai':'logos:openai-icon'" 
+                class="size-6 me-2" />
+                <span>{{ Models.selectedModel.includes('gemini') ? "Gemini":"ChatGpt" }}</span> -->
+            </ClientOnly>
+        </div>
         <ClientOnly>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-gradient signup-link" to="/signup">{{ $t('Sign up')
-                }}</NuxtLink>
+            }}</NuxtLink>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/login">{{ $t('Log in') }}</NuxtLink>
             <NuxtLink v-if="auth.isAuthenticated" to="/pricing-plans">
                 <UButton class="btn btn-gradient" icon="i-lucide-rocket" color="neutral" variant="ghost" :ui="{
@@ -34,7 +44,9 @@ import { computed } from 'vue'
 const { locale, locales, setLocale } = useI18n()
 import { useAuthStore } from '../../stores/auth'
 const auth = useAuthStore()
-
+// Models
+import { useModelsStore } from '../../stores/models'
+const Models = useModelsStore()
 const emit = defineEmits(['toggle-sidebar'])
 // بدل show و dropdown، نعمل دالة لتبديل اللغة مباشرة
 const toggleLocale = () => {
@@ -48,6 +60,12 @@ const toggleLocale = () => {
 const currentLocale = computed(() =>
     locales.value.find((l) => l.code === locale.value)
 )
+
+
+
+
+
+
 </script>
 <style lang="scss">
 header {
@@ -61,23 +79,31 @@ header {
         }
     }
 
-    .logo {
-        margin-inline-end: auto;
+    .select-models {
+        .models-list {
+            position: absolute;
+            top: 100%;
+            background-color: #f3f4f4;
+            border: 1px solid #b4b4b4;
+            box-shadow: 1px 1px 10px #b4b4b4;
+            border-radius: 0.25rem * 1.5;
+            min-width: 184px;
+            overflow: hidden;
+            padding: 0.25rem;
 
-        span {
-            background: linear-gradient(to right,
-                    /* use the variables in a gradient (or wherever!) */
-                    hsl(210 100% 59%),
-                    hsl(310 100% 59%));
+            li {
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem * 1.5;
+                transition: .3s;
+                cursor: pointer;
+                font-size: 15px;
 
-            /* old browser support */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-
-            /* modern browser version */
-            background-clip: text;
-            color: transparent;
+                &:hover {
+                    background-color: #d1d1d1;
+                }
+            }
         }
+
     }
 
     .signup-link {

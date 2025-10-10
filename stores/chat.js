@@ -8,25 +8,7 @@ export const useChatStore = defineStore('chat', () => {
   const AllConversations = ref([])   // قائمة كل المحادثات
   const conversations = ref({})      // كل محادثة مع الرسائل
   const Messages = ref([])  
-  // Modals
-  const selectedModel = ref('gpt-4o-mini')          
-  const modelOptions = [[
-    {
-      label: 'OpenAI chatgpt',
-      icon: 'logos:openai-icon',
-      onSelect: () => {
-        selectedModel.value = 'gpt-4o-mini'
-      }
-    },
-    {
-      label: 'Google Gemini Flash',
-      icon: 'material-icon-theme:gemini-ai',
-      onSelect: () => {
-        selectedModel.value = 'gemini-flash'
-      }
-    }
-  ]]
-  // ------------------------
+  
   // إضافة رسالة لمحادثة موجودة أو جديدة
   function addMessage(conversationId, message) {
     if (!conversations.value[conversationId]) {
@@ -254,8 +236,6 @@ export const useChatStore = defineStore('chat', () => {
     conversations,
     AllConversations,
     Messages,
-    selectedModel,
-    modelOptions,
     addMessage,
     getMessages,
     CreateConversation,

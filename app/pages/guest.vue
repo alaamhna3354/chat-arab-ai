@@ -53,6 +53,10 @@
 
 <script setup>
 import CreateGuestChat from '../components/Guest/CreateGuestChat.vue'
+import {useModelsStore} from '../../stores/models'
+import {  onMounted  } from 'vue'
+const ModelsStore = useModelsStore()
+
 definePageMeta({
   middleware: [],
   layout: 'guest'
@@ -64,6 +68,11 @@ function goToSignup() {
 function goToLogin() {
   window.location.href = '/login'
 }
+onMounted(() => {
+  if(!localStorage.getItem('models')){
+    ModelsStore.fetchGuestModels()
+  }
+})
 </script>
 
 <style lang="scss" scoped>
