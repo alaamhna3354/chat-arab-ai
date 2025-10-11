@@ -58,7 +58,7 @@
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '../../../stores/chat'
-import { useModelsStore } from '../../../stores/models'
+import { useModelsStore } from '../../../stores/Models'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
