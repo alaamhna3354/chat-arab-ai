@@ -1,7 +1,7 @@
 // stores/auth.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useModelsStore } from './Models'
+import {useModelsStore} from './models'
 export const useAuthStore = defineStore('auth', () => {
   const modelsStore  = useModelsStore()
   
