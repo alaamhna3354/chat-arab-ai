@@ -37,7 +37,7 @@ const { locale, locales, setLocale } = useI18n()
 import { useAuthStore } from '../../stores/auth'
 const auth = useAuthStore()
 // Models
-import { useModelsStore } from '../../stores/models'
+import { useModelsStore } from '../../stores/Models'
 const Models = useModelsStore()
 const emit = defineEmits(['toggle-sidebar'])
 // بدل show و dropdown، نعمل دالة لتبديل اللغة مباشرة

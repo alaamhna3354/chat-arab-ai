@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { useModelsStore } from '../../../stores/models'
+import { useModelsStore } from '../../../stores/Models'
 const ModelsStore = useModelsStore()
 
 function getIcon(value) {
