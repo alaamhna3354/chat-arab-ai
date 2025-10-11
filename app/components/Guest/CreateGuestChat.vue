@@ -27,12 +27,7 @@
           </UDropdownMenu>
 
           <!-- زر اختيار الموديل -->
-          <UDropdownMenu  :items="Models.modelOptions"  :ui="{ content: 'w-48' }">
-            <UTooltip class="me-1" :delay-duration="0" text="AI Model">
-              <UButton color="neutral" variant="ghost"
-              :icon="Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai' : 'logos:openai-icon'" />
-            </UTooltip>
-          </UDropdownMenu>
+          <SelectModel />
         </div>
 
         <button class="send" :class="input == '' || isSending ? 'empty' : ''" type="submit" :disabled="isSending">
@@ -45,12 +40,10 @@
 
 <script setup>
 import { useGuestChatStore } from '../../../stores/guestChat'
-import { useModelsStore } from '../../../stores/models'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const guestChat = useGuestChatStore()
-const Models = useModelsStore()
 const router = useRouter()
 const input = ref('')
 const isSending = ref(false)

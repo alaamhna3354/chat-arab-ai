@@ -23,10 +23,8 @@ export const useModelsStore = defineStore('models', () => {
 
                 return {
                     label: meta.label,
+                    value: model,
                     icon: meta.icon,
-                    onSelect: () => {
-                        selectedModel.value = model
-                    }
                 }
             })
         ]

@@ -57,11 +57,7 @@
           </UDropdownMenu>
           
           <!-- زر اختيار الموديل -->
-          <UDropdownMenu :items="Models.modelOptions" :ui="{ content: 'w-48' }">
-            <UTooltip class="me-1" :delay-duration="0" text="AI Model">
-              <UButton color="neutral" variant="ghost" :icon="Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai' : 'logos:openai-icon'" />
-            </UTooltip>
-          </UDropdownMenu>
+          <SelectModel />
         </div>
         
         <button v-if="isStreaming" class="stop" type="button" @click="stopStreaming" @mousedown.prevent tabindex="-1">
@@ -84,7 +80,6 @@ definePageMeta({
 })
 import { useRoute } from 'vue-router'
 import { useGuestChatStore } from '../../../stores/guestChat'
-import { useModelsStore } from '../../../stores/models'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
@@ -92,7 +87,6 @@ import 'highlight.js/styles/github-dark.css'
 const route = useRoute()
 const conversationId = route.params.id as string
 const guestChat = useGuestChatStore()
-const Models = useModelsStore()
 
 // إعداد Markdown
 const md = new MarkdownIt({

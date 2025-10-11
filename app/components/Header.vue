@@ -4,19 +4,11 @@
             class="open-side-bar size-6 text-[#999] cursor-pointer" />
         <div class="me-auto flex items-center">
             <ClientOnly>
-                <UDropdownMenu :items="Models.modelOptions" :ui="{ content: 'w-50' }">
-                    <UButton color="neutral" variant="ghost" class="ps-0"
-                        :icon="Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai' : 'logos:openai-icon'">
-                        <span>{{ Models.selectedModel.includes('gemini') ? "Gemini" : "ChatGpt" }}</span>
-                    </UButton>
-                </UDropdownMenu>
-                <!-- <UIcon :name=" Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai':'logos:openai-icon'" 
-                class="size-6 me-2" />
-                <span>{{ Models.selectedModel.includes('gemini') ? "Gemini":"ChatGpt" }}</span> -->
+              <SelectModel/>
             </ClientOnly>
         </div>
         <ClientOnly>
-            <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-gradient signup-link" to="/signup">{{ $t('Sign up')
+            <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main signup-link" to="/signup">{{ $t('Sign up')
             }}</NuxtLink>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/login">{{ $t('Log in') }}</NuxtLink>
             <NuxtLink v-if="auth.isAuthenticated" to="/pricing-plans">
@@ -60,12 +52,6 @@ const toggleLocale = () => {
 const currentLocale = computed(() =>
     locales.value.find((l) => l.code === locale.value)
 )
-
-
-
-
-
-
 </script>
 <style lang="scss">
 header {

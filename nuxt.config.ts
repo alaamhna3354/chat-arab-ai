@@ -16,8 +16,17 @@ export default defineNuxtConfig({
   app: {
     head: {
       meta: [
+        // iOS full screen
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-title', content: 'ArabAi' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+
+        // Cross origin
         { 'http-equiv': 'Cross-Origin-Opener-Policy', content: 'same-origin-allow-popups' },
-        { 'http-equiv': 'Cross-Origin-Embedder-Policy', content: 'unsafe-none' }
+        { 'http-equiv': 'Cross-Origin-Embedder-Policy', content: 'unsafe-none' },
+
+        // Theme color
+        { name: 'theme-color', content: '#4f46e5' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

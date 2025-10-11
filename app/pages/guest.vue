@@ -35,7 +35,7 @@
             color="primary" 
             variant="solid" 
             @click="goToSignup"
-            class="btn btn-gradient">
+            class="btn btn-main">
             {{ $t("Sign Up Free") }}
           </UButton>
           <UButton 

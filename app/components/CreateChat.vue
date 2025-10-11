@@ -22,12 +22,7 @@
               <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" disabled />
             </UTooltip>
           </UDropdownMenu>
-          <UDropdownMenu :items="Models.modelOptions" :ui="{ content: 'w-48' }">
-            <UTooltip class="me-1" :delay-duration="0" text="AI Model">
-              <UButton color="neutral" variant="ghost"
-              :icon="Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai' : 'logos:openai-icon'" />
-            </UTooltip>
-          </UDropdownMenu>
+          <SelectModel />
         </div>
         <button class="send" :class="input == '' || isSending ? 'empty' : ''" type="submit" :disabled="isSending">
           <UIcon name="majesticons:arrow-up" class="text-xl" />
@@ -39,12 +34,10 @@
 
 <script setup>
 import { useChatStore } from '../../stores/chat'
-import { useModelsStore } from '../../stores/models'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const chat = useChatStore()
-const Models = useModelsStore()
 const router = useRouter()
 const input = ref('')
 const isSending = ref(false)

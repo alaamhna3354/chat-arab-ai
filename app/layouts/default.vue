@@ -1,5 +1,7 @@
 <template>
-
+    <div v-if="isSidebarOpen" @click="isSidebarOpen = !isSidebarOpen"
+      class="block md:hidden fixed inset-0 z-39 backdrop-blur-sm bg-elevated/75 cursor-pointer">
+    </div>
     <div v-if="Loaded" class="main" :class="isSidebarOpen ? 'open' : ''">
         <!-- Sidebar -->
         <SideBar :class="isSidebarOpen ? 'open' : ''" @toggle-sidebar="toggleSidebar" />
