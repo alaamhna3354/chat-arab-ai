@@ -38,11 +38,8 @@
               <UButton color="neutral" variant="ghost" icon="iconamoon:sign-plus-bold" disabled />
             </UTooltip>
           </UDropdownMenu>
-          <UDropdownMenu :items="Models.modelOptions" :ui="{ content: 'w-48' }">
-            <UTooltip class="me-1" :delay-duration="0" text="AI Model">
-              <UButton color="neutral" variant="ghost" :icon="Models.selectedModel.includes('gemini') ? 'material-icon-theme:gemini-ai' : 'logos:openai-icon'" />
-            </UTooltip>
-          </UDropdownMenu>
+          <!-- زر اختيار الموديل -->
+          <SelectModel />
         </div>
         <button v-if="isStreaming" class="stop" type="button" @click="stopStreaming" @mousedown.prevent
         tabindex="-1">
@@ -69,8 +66,6 @@ import 'highlight.js/styles/github-dark.css'
 const route = useRoute()
 const conversationId = route.params.id
 const chat = useChatStore()
-const Models = useModelsStore()
-
 const md = new MarkdownIt({
   highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {

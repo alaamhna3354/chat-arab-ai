@@ -1,5 +1,8 @@
 <template>
   <div class="main" :class="isSidebarOpen ? 'open' : ''">
+    <div v-if="isSidebarOpen" @click="isSidebarOpen = !isSidebarOpen"
+      class="block md:hidden fixed inset-0 z-39 backdrop-blur-sm bg-elevated/75 cursor-pointer">
+    </div>
     <!-- Sidebar -->
     <GuestSideBar :class="isSidebarOpen ? 'open' : ''" @toggle-sidebar="toggleSidebar" />
 
