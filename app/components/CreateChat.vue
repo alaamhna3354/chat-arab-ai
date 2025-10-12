@@ -34,10 +34,12 @@
 
 <script setup>
 import { useChatStore } from '../../stores/chat'
+import { useModelsStore } from '../../stores/models'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const chat = useChatStore()
+const modelsStore = useModelsStore()
 const router = useRouter()
 const input = ref('')
 const isSending = ref(false)
@@ -55,7 +57,7 @@ const createNewChat = async () => {
   isSending.value = true
 
   try {
-    const newConv = await chat.CreateConversation(input.value, chat.selectedModel)
+    const newConv = await chat.CreateConversation(input.value, modelsStore.selectedModel)
     if (newConv?.conversation_id) {
       router.push(`/chat/${newConv.conversation_id}`)
     }

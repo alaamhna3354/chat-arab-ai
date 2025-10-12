@@ -58,6 +58,7 @@
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '../../../stores/chat'
+import { useModelsStore } from '../../../stores/models'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
@@ -65,6 +66,7 @@ import 'highlight.js/styles/github-dark.css'
 const route = useRoute()
 const conversationId = route.params.id
 const chat = useChatStore()
+const modelsStore = useModelsStore()
 const md = new MarkdownIt({
   highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {
@@ -164,7 +166,7 @@ const sendMessage = async () => {
   currentStreamText.value = ''
 
   // استدعاء streamChat
-  currentStream = chat.streamChat(userMessage, conversationId, chat.selectedModel, {
+  currentStream = chat.streamChat(userMessage, conversationId, modelsStore.selectedModel, {
     onChunk: (text) => {
       currentStreamText.value += text
       const msg = chat.getMessages(conversationId).find(
