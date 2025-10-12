@@ -53,7 +53,7 @@
 
 <script setup>
 import CreateGuestChat from '../components/Guest/CreateGuestChat.vue'
-import {useModelsStore} from '../../stores/Models'
+import {useModelsStore} from '../../stores/models'
 import {  onMounted  } from 'vue'
 const ModelsStore = useModelsStore()
 
