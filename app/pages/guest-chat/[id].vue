@@ -80,6 +80,7 @@ definePageMeta({
 })
 import { useRoute } from 'vue-router'
 import { useGuestChatStore } from '../../../stores/guestChat'
+import { useModelsStore } from '../../../stores/models'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
@@ -87,6 +88,7 @@ import 'highlight.js/styles/github-dark.css'
 const route = useRoute()
 const conversationId = route.params.id as string
 const guestChat = useGuestChatStore()
+const modelsStore = useModelsStore()
 
 // إعداد Markdown
 const md = new MarkdownIt({
@@ -191,7 +193,7 @@ const sendMessage = async () => {
   currentStreamText.value = ''
 
   // استدعاء streamChat
-  currentStream = guestChat.sendMessageToAI(userMessage, guestChat.selectedModel, {
+  currentStream = guestChat.sendMessageToAI(userMessage, modelsStore.selectedModel, {
     onChunk: (text) => {
       currentStreamText.value += text
       const msg = guestChat.getMessages(conversationId).find(

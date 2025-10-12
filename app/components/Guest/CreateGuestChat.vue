@@ -40,10 +40,12 @@
 
 <script setup>
 import { useGuestChatStore } from '../../../stores/guestChat'
+import { useModelsStore } from '../../../stores/models'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const guestChat = useGuestChatStore()
+const modelsStore = useModelsStore()
 const router = useRouter()
 const input = ref('')
 const isSending = ref(false)
@@ -64,7 +66,7 @@ const createNewGuestChat = async () => {
     const conversationId = guestChat.createGuestConversation()
     guestChat.addMessage(conversationId, { role: 'user', content: input.value })
 
-    guestChat.sendMessageToAI(input.value, guestChat.selectedModel, {
+    guestChat.sendMessageToAI(input.value, modelsStore.selectedModel, {
       onStart: () => {
         console.log('🚀 Guest streaming started')
       },

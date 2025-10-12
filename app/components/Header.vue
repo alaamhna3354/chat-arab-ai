@@ -4,12 +4,12 @@
             class="open-side-bar size-6 text-[#999] cursor-pointer" />
         <div class="me-auto flex items-center">
             <ClientOnly>
-              <SelectModel/>
+                <SelectModel v-if="ShowSelectModel" />
             </ClientOnly>
         </div>
         <ClientOnly>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-main signup-link" to="/signup">{{ $t('Sign up')
-            }}</NuxtLink>
+                }}</NuxtLink>
             <NuxtLink v-if="!auth.isAuthenticated" class="btn btn-secondary" to="/login">{{ $t('Log in') }}</NuxtLink>
             <NuxtLink v-if="auth.isAuthenticated" to="/pricing-plans">
                 <UButton class="btn btn-gradient" icon="i-lucide-rocket" color="neutral" variant="ghost" :ui="{
@@ -33,8 +33,10 @@
 
 <script setup>
 import { computed } from 'vue'
-const { locale, locales, setLocale } = useI18n()
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+const route = useRoute()
+const { locale, locales, setLocale } = useI18n()
 const auth = useAuthStore()
 // Models
 const emit = defineEmits(['toggle-sidebar'])
@@ -50,6 +52,16 @@ const toggleLocale = () => {
 const currentLocale = computed(() =>
     locales.value.find((l) => l.code === locale.value)
 )
+const ShowSelectModel = computed(() => {
+    if (route.path == '/' ) {
+        if(!auth.isAuthenticated)
+        return false
+        else return true
+    }
+    else{
+        return true
+    }
+})
 </script>
 <style lang="scss">
 header {
